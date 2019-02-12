@@ -32,7 +32,6 @@ folium==0.7.0
 GDAL==2.3.3
 geographiclib==1.49
 geopandas==0.4.0
-geoplot==0.2.3
 geopy==1.18.1
 html5lib==1.0.1
 idna==2.8
