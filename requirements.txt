@@ -31,6 +31,7 @@ Flask-SQLAlchemy==2.3.2
 geographiclib==1.49
 geopandas==0.4.0
 geopy==1.18.1
+gunicorn==19.9.0
 html5lib==1.0.1
 idna==2.8
 ipython-genutils==0.2.0
