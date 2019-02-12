@@ -1,4 +1,4 @@
-import pdfkit
+import os
 import seaborn as sns
 import pandas as pd
 import numpy as np
@@ -29,6 +29,7 @@ from flask import Flask, jsonify, render_template, request, redirect, url_for, m
 import json
 import urllib
 import requests
+import pdfkit
 import datetime
 from dateutil.parser import parse
 from collections import defaultdict, ChainMap, OrderedDict
@@ -56,11 +57,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #################################################
 # MySQL Config
 #################################################
-
 ####### FOR LOCAL USE ONLY ########:
 # from config import mysql_pswd
 # PASSWORD = mysql_pswd
-
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
 PASSWORD = os.environ.get('mysql_pswd')
 
