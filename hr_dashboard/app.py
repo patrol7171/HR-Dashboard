@@ -34,7 +34,6 @@ from dateutil.parser import parse
 from collections import defaultdict, ChainMap, OrderedDict
 pd.options.mode.chained_assignment = None
 import mysql.connector
-from config import mysql_pswd
 from matplotlib import cm
 current_palette = sns.color_palette("muted", n_colors=30)
 cmap1 = cm.get_cmap('gist_rainbow')
@@ -55,9 +54,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 #################################################
+# MySQL Config
+#################################################
+
+####### FOR LOCAL USE ONLY ########:
+# from config import mysql_pswd
+# PASSWORD = mysql_pswd
+
+####### FOR HEROKU DEPLOYMENT ONLY ########:
+PASSWORD = os.environ.get('mysql_pswd')
+
+
+
+
+#################################################
 # Database Setup
 #################################################
-PASSWORD = mysql_pswd
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:'+PASSWORD+'@localhost/dental_magic_hr_db'
 db = SQLAlchemy(app)
 engine = db.create_engine('mysql://root:'+PASSWORD+'@localhost/dental_magic_hr_db', echo=False)
