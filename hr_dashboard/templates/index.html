@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h2>HR Data Analytics Portal</h2>
+	<p>My Dashboard</p>
+	<div class="row-fluid" id="quote">
+		<div class="col-xs-6 col-sm-6 col-md-12 col-lg-12">
+			<div class="panel panel-default panel-horizontal">
+			<div class="panel-heading gradient" >
+				<h5 class="panel-title"><i>Quote of the Day</i></h5>						
+			</div>
+			<div class="panel-body">
+				<div id="quoteInfo" class="text-center"></div>
+			</div>	
+			</div>
+		</div>
+	</div>		
+	<div class="row-fluid">
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">
+			<div class="panel panel-default">
+				<div class="panel-body">
+				<a href="{{url_for('demographics')}}"><p><b>Employee Demographics</b></p></a>
+					<hr>
+					<div id='graph-img'>
+						<img src={{ src1 }} alt="departments">
+					</div>
+				</div>						
+			</div>
+		</div>		
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">	
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<a href="{{url_for('recruiting')}}"><p><b>Recruitment</b></p></a>
+					<hr>
+					<div id="graph-img">
+						<img src={{ src2 }} alt="recruitment">
+					</div>
+				</div>						
+			</div>			
+		</div>	
+	</div>
+	<div class="row-fluid">			
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">		
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<a href="{{url_for('talent')}}"><p><b>Talent Management</b></p></a>
+					<hr>
+					<div id="graph-img">
+						<img src={{ src3 }} alt="staff performance">
+					</div>
+				</div>						
+			</div>			
+		</div>				
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">	
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<a href="{{url_for('attrition')}}"><p><b>Employee Attrition & Retention</b></p></a>
+					<hr>
+					<div id="graph-img">
+						<img src={{ src4 }} alt="attrition&retention">
+					</div>
+				</div>						
+			</div>		
+		</div>		
+	</div>		
+{% endblock %}
+
+{% block quote_script %}
+	var quote;
+	var author;	
+	$(document).ready(function () {
+		 var url = "https://api.forismatic.com/api/1.0/?method=getQuote&format=jsonp&lang=en&jsonp=myJsonMethod&?callback=?";
+		 $.getJSON(url);
+	});			
+	function myJsonMethod(response) {
+		  quote = response.quoteText;
+		  author = response.quoteAuthor;
+		  if (response.quoteAuthor == '') {
+			$('#quoteInfo').html("<h5>" + quote + "</h5>" + "<p><i>- Author Unknown</i></p>");
+		  } else {
+			$('#quoteInfo').html("<h5>" + quote + "</h5>" + "<p><i>- " + author + "</i></p>");
+		  }
+	}	
+{% endblock %}					

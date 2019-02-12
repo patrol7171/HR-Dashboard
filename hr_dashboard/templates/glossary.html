@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block glossary_style %}	
+	span.letterLinkSpan {
+		display: inline-block;
+	}
+	span.letterLinkSpan>a.letterLink {
+		display: inline-block;
+		width: 1.1em;
+		text-align: center;
+		padding: 0.2em;
+		font-size: medium;
+		color: #000000;
+		background-color: #74746a;
+	}
+	span.letterLinkSpan>a.letterLink.entriesPresent {
+		font-weight: bold;
+	}
+	span.letterLinkSpan>a.letterLink.entriesAbsent {
+		font-weight: normal;
+		color: #FFEEEE;
+	}
+	span.letterLinkSpan>a.letterLink:hover {
+		background-color: #8dff33;
+	}
+{% endblock %}		
+
+{% block content %}		
+	<h2>HR Glossary</h2>				
+	<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="glossary-panel">
+			<div class="panel panel-default">						
+				<div class="panel-body">
+					<div id="quicklinks"></div>
+					</br>
+					<dl class="glossary"> 
+						<a name="Ability"></br>							
+							<dt>Ability</dt> 
+							<dd>A competence to perform an observable behavior or a behavior that results in an observable product.</dd>
+						<a name="Adaptive Device"></br>
+							<dt>Adaptive Device</dt> 
+							<dd>Any tool that facilitates greater efficiency by an individual with a disability in the performance of duties.</dd>
+						<a name="Adverse Impact"></br>
+							<dt>Adverse Impact</dt> 
+							<dd>Adverse impact exists where a substantially different rate of selection in hiring, promotions, or other employment decisions works to the disadvantage of members of a protected group. An inference of adverse impact may occur in the absence of such data and is determined by calculating the extent of a group's representation or utilization in a given occupation based on the availability of its members in the relevant labor market.</dd>
+						<a name="Affected Group"></br>
+							<dt>Affected Group</dt> 
+							<dd>Any group in the population shown to suffer the effects of past or present discrimination.</dd>
+						<a name="Affirmative Action File"></br>
+							<dt>Affirmative Action File</dt> 
+							<dd>A file maintained by an agency to document affirmative action efforts.</dd>
+						<a name="Affirmative Action Officer"></br>
+							<dt>Affirmative Action Officer</dt> 
+							<dd>An individual in an agency who has primary responsibility for the development and maintenance of the agency's affirmative action plan.</dd>
+						<a name="American Indian/Alaskan Native"></br>
+							<dt>American Indian/Alaskan Native</dt> 
+							<dd>All persons having origins in any of the original peoples of North America who maintain cultural identification through tribal affiliation or community recognition.</dd>
+						<a name="Americans With Disabilities Act (ADA)"></br>
+							<dt>Americans With Disabilities Act (ADA)</dt> 
+							<dd>Prohibits discrimination against persons with disabilities in employment, government programs, public accommodation, telecommunications, and transportation.</dd>
+						<a name="Applicant Flow Log"></br>
+							<dt>Applicant Flow Log</dt> 
+							<dd>A chronological compilation of applicants for employment or promotion, showing the persons categorized by race, sex, and ethnic group, who applied for each job title (or group of job titles requiring similar qualifications) during a specific period.</dd>
+						<a name="Architectural Barrier"></br>
+							<dt>Architectural Barrier</dt> 
+							<dd>Any non-job related consideration that excludes from employment individuals otherwise capable of doing the work at issue.</dd>
+						<a name="Availability Standard"></br>
+							<dt>Availability Standard</dt> 
+							<dd>A percentage figure depicting the availability in the relevant labor market of a group who are qualified under valid, job-related criteria.</dd>
+						<a name="Back Pay"></br>							
+							<dt>Back Pay</dt> 
+							<dd>Compensation for past economic losses (such as lost wages, fringe benefits, etc.), caused by discriminatory employment practices.</dd>
+						<a name="Barrier"></br>
+							<dt>Barrier</dt> 
+							<dd>Any obstacle to the realization of a person's full potential.</dd>
+						<a name="Black"></br>
+							<dt>Black (Not of Hispanic Origins)</dt> 
+							<dd>All persons having origins in any of the black racial groups of Africa.</dd>
+						<a name="Bona Fide Occupational Qualification"></br>
+							<dt>Bona Fide Occupational Qualification (BFOQ)</dt> 
+							<dd>Any prerequisite that has been demonstrated to be valid as a qualification for employment.</dd>
+						<a name="Burden of Proof"></br>
+							<dt>Burden of Proof</dt> 
+							<dd>In discrimination cases, the plaintiff must show that an action, practice, or policy used by the employer has an adverse impact. Once adverse effect is shown, the burden of proof shifts to the employer, who must show that the action, practice, or policy is job related.</dd>
+						<a name="Business Necessity"></br>
+							<dt>Business Necessity</dt> 
+							<dd>Under the Uniform Guidelines on Employee Selection Procedures, necessary to the safe and efficient operation of the business, that it effectively carries out the purpose it is supposed to serve, and that there are no alternative policies or practices which would better or equally well serve the same purpose with less discriminatory impact.</dd>
+
+						<a name="White"></br>		
+							<dt>White (not of Hispanic origin)</dt> 
+							<dd>All persons having origins in any of the original peoples of Europe, North Africa, or the Middle East.</dd>
+						<a name="Work Behavior"></br>
+							<dt>Work Behavior</dt> 
+							<dd>Any activity performed to achieve the objectives of the job. Work behaviors involve observable (physical) components and unobservable (mental) components. A work behavior consists of the performance of one or more tasks. Knowledge, skills, and abilities are not behaviors, although they may be applied to work behaviors.</dd>
+						<a name="Workforce Analysis"></br>
+							<dt>Workforce Analysis</dt> 
+							<dd>An analysis that reveals the composition of employees in a workforce by protected group status and occupational category.</dd>
+	
+					</dl>
+				</div>	
+			</div>
+		</div>
+	</div>
+{% endblock %}	
+			
+{% block glossary_script %}
+	var terms = $("dl.glossary dt").sort();
+	var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	
+	for (var i = 0; i < letters.length; i++) {
+		var nextChar = letters.charAt(i);
+		// Need to find first of each letter
+		var foundOne = -999;
+		for (var j = 0; j < terms.length; j++) {
+			var termj = terms[j].innerText;
+			var termJJ = termj.toUpperCase();
+			if (termJJ.charAt(0) == nextChar) {
+				foundOne = j;
+				break;
+			}
+		}
+		// Create links and anchors based on whether something was found
+		if (foundOne == -999) {
+			// Create a new letterLink (with class "entriesAbsent")
+			newLetterLink = "<span class=\"letterLinkSpan\"><a class=\"letterLink entriesAbsent\">" + nextChar + "</a></span>";
+		} else {
+			// Create a new letterLink (with class "entriesPresent")
+			newLetterLink = "<span class=\"letterLinkSpan\"><a class=\"letterLink entriesPresent\" href=\"#" + nextChar + "\">" + nextChar + "</a></span>";
+			// Create an anchor for the letterLink BEFORE the first glossary term starting with that letter
+			$("<a class=\"letterAnchor\" name=\"" + nextChar + "\">").insertBefore(terms[foundOne]);
+		}
+		// Either way, add the letterLink to the list of letterLinks
+		$("div#quicklinks").append(newLetterLink);
+	}	
+{% endblock %}	

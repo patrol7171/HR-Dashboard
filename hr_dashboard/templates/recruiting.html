@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Recruitment</h2>
+<!-- 	<div class="row-fluid">
+		<div class='col-sm-12 col-md-12 col-lg-12'>
+			<div class="well">
+				<p>
+				 Testing, testing, testing...
+				</p>
+			</div>		 
+		</div>				
+	</div> -->
+	<div class="row-fluid">
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">
+			<div class="panel panel-default">
+			<div class="panel-heading"><b>Top Ten Costliest Employment Sources In 2018</b></div>
+				<div class="panel-body">
+					<div id='graph-img'>
+						<img src={{ src1 }} alt="d">
+					</div>
+				</div>						
+			</div>
+		</div>		
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">	
+			<div class="panel panel-default">
+			<div class="panel-heading"><b>2018 Employment Source Costs ($)</b></div>
+				<div class="panel-body">
+					<div id="graph-img">
+						<img src={{ src2 }} alt="">
+					</div>
+				</div>						
+			</div>			
+		</div>	
+	</div>
+	<div class="row-fluid">			
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">		
+			<div class="panel panel-default">
+			<div class="panel-heading"><b>Pre-Hire Employment Sources - Racial Breakdown</b></div>
+				<div class="panel-body">
+					<div id="graph-img">
+						<img src={{ src3 }} alt="">
+					</div>
+				</div>						
+			</div>			
+		</div>				
+		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">	
+			<div class="panel panel-default">
+			<div class="panel-heading"><b>Pre-Hire Employment Sources - Gender Breakdown </b></div>
+				<div class="panel-body">
+					<div id="graph-img">
+						<img src={{ src4 }} alt="">
+					</div>
+				</div>						
+			</div>		
+		</div>
+	</div>	
+{% endblock %}	
+
