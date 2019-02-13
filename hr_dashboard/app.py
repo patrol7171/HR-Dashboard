@@ -62,7 +62,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # PASSWORD = mysql_pswd
 # MYSQLCONFIG = 'mysql://root:'+PASSWORD+'@localhost/dental_magic_hr_db'
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
-MYSQLCONFIG = 'mysql://b1f2489c9b282e:e9c72da2@us-cdbr-iron-east-03.cleardb.net/heroku_ef3c242f95c079b?reconnect=true'
+MYSQLCONFIG = 'mysql://b1f2489c9b282e:e9c72da2@us-cdbr-iron-east-03.cleardb.net/heroku_ef3c242f95c079b'
 
 
 
