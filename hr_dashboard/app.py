@@ -71,8 +71,9 @@ MYSQLCONFIG = os.environ.get('CLEARDB_DATABASE_URL')
 # Database Setup
 #################################################
 app.config['SQLALCHEMY_DATABASE_URI'] = MYSQLCONFIG
+app.config['SQLALCHEMY_POOL_SIZE'] = 90
 db = SQLAlchemy(app)
-engine = db.create_engine(MYSQLCONFIG, echo=False)
+engine = db.create_engine(MYSQLCONFIG, echo=False, pool_recycle=3600)
 session = Session(engine)
 
 class Employee_Data(db.Model):
