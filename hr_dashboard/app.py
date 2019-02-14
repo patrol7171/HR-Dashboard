@@ -60,9 +60,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 ####### FOR LOCAL USE ONLY ########:
 # from config import mysql_pswd
 # PASSWORD = mysql_pswd
-# MYSQLCONFIG = 'mysql://root:'+PASSWORD+'@localhost/dental_magic_hr_db'
+# MYSQLCONNECTION = 'mysql://root:'+PASSWORD+'@localhost/dental_magic_hr_db'
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
-MYSQLCONFIG = os.environ.get('CLEARDB_DATABASE_URL')
+MYSQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
 
 
 
@@ -70,10 +70,11 @@ MYSQLCONFIG = os.environ.get('CLEARDB_DATABASE_URL')
 #################################################
 # Database Setup
 #################################################
-app.config['SQLALCHEMY_DATABASE_URI'] = MYSQLCONFIG
-app.config['SQLALCHEMY_POOL_SIZE'] = 90
+app.config['SQLALCHEMY_DATABASE_URI'] = MYSQLCONNECTION
+app.config['SQLALCHEMY_POOL_RECYCLE'] = 299
+app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 db = SQLAlchemy(app)
-engine = db.create_engine(MYSQLCONFIG, echo=False, pool_recycle=3600)
+engine = db.create_engine(MYSQLCONNECTION, pool_timeout=20, pool_recycle=299)
 session = Session(engine)
 
 class Employee_Data(db.Model):
