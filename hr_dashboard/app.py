@@ -59,13 +59,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #################################################
 # MySQL Config
 #################################################
-####### FOR LOCAL USE ONLY ########:
-# from config import mysql_pswd
-# PASSWORD = mysql_pswd
-# MYSQLCONNECTION = 'mysql://root:'+PASSWORD+'@localhost/dental_magic_hr_db'
-MYSQLCONNECTION = 'mysql://b1f2489c9b282e:e9c72da2@us-cdbr-iron-east-03.cleardb.net/heroku_ef3c242f95c079b'
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
-# MYSQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
+MYSQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
+####### FOR LOCAL USE ONLY ########:
+# from config import mysql_cleardb
+# MYSQLCONNECTION = mysql_cleardb
+
 
 
 
