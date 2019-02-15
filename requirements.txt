@@ -48,7 +48,7 @@ matplotlib==3.0.2
 mercantile==1.0.4
 mpld3==0.3
 munch==2.3.2
-mysql-connector-python==8.0.13
+mysql-connector-python==8.0.15
 mysqlclient==1.4.1
 nbformat==4.4.0
 numpy==1.16.0
