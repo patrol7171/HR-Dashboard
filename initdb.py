@@ -1,5 +1,4 @@
-from hr_dashboard.app import db
 import os
+from hr_dashboard.app import db
 
-# db.drop_all()
 db.create_all()
