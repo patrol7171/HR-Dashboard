@@ -34,7 +34,7 @@ import datetime
 from dateutil.parser import parse
 from collections import defaultdict, ChainMap, OrderedDict
 pd.options.mode.chained_assignment = None
-import mysql.connector
+# import mysql.connector
 
 
 from matplotlib import cm
@@ -52,20 +52,21 @@ cs2 = cm.Paired(np.arange(40))
 #################################################
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['TESTING'] = True
 
 
 
 
 #################################################
-# MySQL Config
+# SQL DB Config
 #################################################
 
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
-# MYSQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
-MYSQLCONNECTION = 'mysql://b1f2489c9b282e:e9c72da2@us-cdbr-iron-east-03.cleardb.net/heroku_ef3c242f95c079b'
+# SQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
+SQLCONNECTION = 'sqlite:///Dental_Magic_HR_v9.sqlite'
 ####### FOR LOCAL USE ONLY ########:
 # from config import mysql_cleardb
-# MYSQLCONNECTION = mysql_cleardb
+# SQLCONNECTION = mysql_cleardb
 
 
 
@@ -74,11 +75,11 @@ MYSQLCONNECTION = 'mysql://b1f2489c9b282e:e9c72da2@us-cdbr-iron-east-03.cleardb.
 #################################################
 # Database Setup
 #################################################
-app.config['SQLALCHEMY_DATABASE_URI'] = MYSQLCONNECTION
-app.config['SQLALCHEMY_POOL_RECYCLE'] = 299
-app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLCONNECTION
+# app.config['SQLALCHEMY_POOL_RECYCLE'] = 299
+# app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 db = SQLAlchemy(app)
-engine = db.create_engine(MYSQLCONNECTION, pool_timeout=20, pool_recycle=299)
+engine = db.create_engine(SQLCONNECTION, echo=False)
 session = Session(engine)
 
 class Employee_Data(db.Model):
@@ -575,6 +576,6 @@ def staffPerfScoreDistribSrc(df):
 	
 	
 if __name__ == '__main__':
-    app.run(debug=True,threaded=True)
+    app.run()
 	
 	
