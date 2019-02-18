@@ -62,8 +62,9 @@ app.config['TESTING'] = True
 #################################################
 
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
-# SQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
 SQLCONNECTION = 'sqlite:///Dental_Magic_HR_v9.sqlite'
+# SQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
+
 ####### FOR LOCAL USE ONLY ########:
 # from config import mysql_cleardb
 # SQLCONNECTION = mysql_cleardb
