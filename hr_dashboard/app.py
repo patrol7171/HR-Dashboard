@@ -36,7 +36,6 @@ from collections import defaultdict, ChainMap, OrderedDict
 pd.options.mode.chained_assignment = None
 import mysql.connector
 
-
 from matplotlib import cm
 current_palette = sns.color_palette("muted", n_colors=30)
 cmap1 = cm.get_cmap('gist_rainbow')
@@ -50,10 +49,16 @@ cs2 = cm.Paired(np.arange(40))
 #################################################
 # Flask Setup
 #################################################
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+PROJECT_DIR = os.path.join(PROJECT_ROOT,'../hr_dashboard')
+STATIC_DIR = os.path.join(PROJECT_DIR,'static/')
+IMG_DIR = os.path.join(STATIC_DIR,'img/')
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['TESTING'] = True
-my_path = os.getcwd()
+
+
 
 
 
@@ -67,7 +72,6 @@ SQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
 ####### FOR LOCAL USE ONLY ########:
 # from config import mysql_cleardb
 # SQLCONNECTION = mysql_cleardb
-
 
 
 
@@ -284,7 +288,8 @@ def getRecruitCostsDF(sql):
 def deptSrc(df):	
 	fig = (df['Department'].value_counts()[0:20].plot(kind='pie',figsize=(8,8),title='Current Departmental Staff',
 		autopct='%1.1f%%',colormap=cmap1,label='',fontsize=20)).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\dept.png', bbox_inches='tight')
+	img_file = 'dept.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/dept.png'
 	
@@ -296,7 +301,8 @@ def recruitingSrc(df):
 	top10_2018costs = totalsTbl2018.nlargest(10)
 	fig = (top10_2018costs.plot(kind='pie',figsize=(8,8),autopct='%1.1f%%',colormap=cmap2,title='2018 Top 10 Costliest Employment Sources',
 		label='',fontsize=20)).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\top10recruit.png', bbox_inches='tight')	
+	img_file = 'top10recruit.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')	
 	plt.clf()	
 	src = '../static/img/top10recruit.png'
 	
@@ -306,7 +312,8 @@ def recruitingSrc(df):
 def staffPerfSrc(df):	
 	fig = (df['PerformanceScore'].value_counts()[0:20].plot(kind='pie',figsize=(8,8),autopct='%1.1f%%',colormap=cmap2,
 		title='Current Staff Performance Score Results',label='',fontsize=20)).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\staffPerf.png', bbox_inches='tight')	
+	img_file = 'staffPerf.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')	
 	plt.clf()
 	plt.close()	
 	src = '../static/img/staffPerf.png'
@@ -316,8 +323,9 @@ def staffPerfSrc(df):
 	
 def termReasonsSrc(df):	   
 	rft_df = (df[~df.ReasonForTerm.str.startswith('Not applicable')]).copy()
-	fig5 =(rft_df['ReasonForTerm'].value_counts()[0:20].plot(kind='barh',figsize=(10,8),colormap=cmap1,title='Reasons For Termination')).get_figure()
-	fig5.savefig(my_path + r'\hr_dashboard\static\img\termReasons.png', bbox_inches='tight')	
+	fig =(rft_df['ReasonForTerm'].value_counts()[0:20].plot(kind='barh',figsize=(10,8),colormap=cmap1,title='Reasons For Termination')).get_figure()
+	img_file = 'termReasons.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')	
 	plt.clf()
 	src = '../static/img/termReasons.png'
 	
@@ -333,7 +341,8 @@ def staffLocalesSrc(df):
 		tick.set_fontsize(20)
 	for tick in ax2.get_yticklabels():
 		tick.set_fontsize(20)
-	plt.savefig(my_path + r'\hr_dashboard\static\img\staffLocale.png', bbox_inches='tight')
+	img_file = 'staffLocale.png'
+	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
 	src = '../static/img/staffLocale.png'
 	
@@ -382,7 +391,8 @@ def empStatusSrc(df):
 	plt.title('Employment Status - All Records')
 	plt.legend(labels=pie2Labels, bbox_to_anchor=(0.6,0.18), loc="center right", fontsize=12, bbox_transform=plt.gcf().transFigure)
 	plt.tight_layout()
-	plt.savefig(my_path + r'\hr_dashboard\static\img\status.png', bbox_inches='tight')
+	img_file = 'status.png'	
+	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
 	src = '../static/img/status.png'
 	
@@ -391,7 +401,8 @@ def empStatusSrc(df):
 	
 def deptCountSrc(df):		
 	fig = (df['Department'].value_counts()[0:20].plot(kind='barh',figsize=(10,8),title='Current Staff Count Per Dept',label='',fontsize=20)).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\deptCount.png', bbox_inches='tight')	
+	img_file = 'deptCount.png'	
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')	
 	plt.clf()
 	src = '../static/img/deptCount.png'
 	
@@ -404,7 +415,8 @@ def positionCountSrc(df):
 	plt.xticks(rotation = 60, ha='right')
 	plt.title('Current Staff Count Per Position')
 	plt.tight_layout()
-	plt.savefig(my_path + r'\hr_dashboard\static\img\positionCount.png', bbox_inches='tight')
+	img_file = 'positionCount.png'	
+	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
 	src = '../static/img/positionCount.png'
 
@@ -415,7 +427,8 @@ def raceDistribSrc(df):
 	g = sns.catplot("RaceDesc", data=df, aspect=4, kind="count")
 	g.set_xticklabels(rotation=0)
 	g = plt.title("Staff Racial Distribution")
-	plt.savefig(my_path + r'\hr_dashboard\static\img\raceDistrib.png', bbox_inches='tight')
+	img_file = 'raceDistrib.png'	
+	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
 	src = '../static/img/raceDistrib.png'
 	
@@ -424,7 +437,8 @@ def raceDistribSrc(df):
 
 def racePercentSrc(df):	
 	fig = (df['RaceDesc'].value_counts()[0:20].plot(kind='pie',figsize=(8,8),title='Staff Percentage Per Race',autopct='%1.1f%%', label='',colormap=cmap2)).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\racePercent.png', bbox_inches='tight')
+	img_file = 'racePercent.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
 	src = '../static/img/racePercent.png'
 	
@@ -434,7 +448,8 @@ def racePercentSrc(df):
 def genderCountSrc(df):	
 	g = sns.countplot(df["Sex"])
 	g = plt.title("Staff Gender Counts")
-	plt.savefig(my_path + r'\hr_dashboard\static\img\genderCount.png', bbox_inches='tight')
+	img_file = 'genderCount.png'
+	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/genderCount.png'
 
@@ -445,7 +460,8 @@ def ageCountSrc(df):
 	g = sns.catplot("Age", data=df, aspect=4, kind="count")
 	g.set_xticklabels(rotation=0)
 	g = plt.title("Distribution of Ages Among Staff")
-	plt.savefig(my_path + r'\hr_dashboard\static\img\ageCount.png', bbox_inches='tight')
+	img_file = 'ageCount.png'
+	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/ageCount.png'
 
@@ -455,7 +471,8 @@ def ageCountSrc(df):
 def maritalDistribSrc(df):	
 	table = pd.crosstab(index=df["Department"], columns=df["MaritalDesc"])	
 	fig = (table.plot(kind="barh",figsize=(10,5),stacked=True,title='Marital Status Distribution By Dept').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\maritalDistrib.png', bbox_inches='tight')
+	img_file = 'maritalDistrib.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
 	src = '../static/img/maritalDistrib.png'
 	
@@ -465,7 +482,8 @@ def maritalDistribSrc(df):
 def raceDistrib2Src(df):	
 	table = pd.crosstab(index=df["Department"], columns=df["RaceDesc"])	
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Race Distribution By Dept').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\raceDistrib2.png', bbox_inches='tight')
+	img_file = 'raceDistrib2.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/raceDistrib2.png'
 	
@@ -475,7 +493,8 @@ def raceDistrib2Src(df):
 def genderDistribSrc(df):
 	table = pd.crosstab(index=df["Department"], columns=df["Sex"])
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=False, title='Gender Distribution By Dept')).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\genderDistrib.png', bbox_inches='tight')
+	img_file = 'genderDistrib.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/genderDistrib.png'
 
@@ -486,7 +505,8 @@ def rftMaritalSrc(df):
 	rft_df = (df[~df.ReasonForTerm.str.startswith('Not applicable')]).copy()
 	table = pd.crosstab(index=rft_df["ReasonForTerm"], columns=rft_df["MaritalDesc"])	
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Reason For Term By Marital Status').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\rftMarital.png', bbox_inches='tight')
+	img_file = 'rftMarital.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/rftMarital.png'
 
@@ -497,7 +517,8 @@ def rftRaceSrc(df):
 	rft_df = (df[~df.ReasonForTerm.str.startswith('Not applicable')]).copy()
 	table = pd.crosstab(index=rft_df["ReasonForTerm"], columns=rft_df["RaceDesc"])	
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Reason For Term By Race').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\rftRace.png', bbox_inches='tight')
+	img_file = 'rftRace.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/rftRace.png'
 
@@ -508,7 +529,8 @@ def rftGenderSrc(df):
 	rft_df = (df[~df.ReasonForTerm.str.startswith('Not applicable')]).copy()
 	table = pd.crosstab(index=rft_df["ReasonForTerm"], columns=rft_df["Sex"])		
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Reason For Term By Gender').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\rftGender.png', bbox_inches='tight')
+	img_file = 'rftGender.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/rftGender.png'
 
@@ -517,7 +539,8 @@ def rftGenderSrc(df):
 	
 def employCosts2018Src(df):	
 	fig = (df.plot(kind="barh", figsize=(10,8), stacked=True, colormap=cmap1,title='2018 Employment Source Costs').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\employCosts2018.png', bbox_inches='tight')
+	img_file = 'employCosts2018.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/employCosts2018.png'
 
@@ -527,7 +550,8 @@ def employCosts2018Src(df):
 def raceEmploySrcSrc(df):	
 	table = pd.crosstab(index=df["EmployeeSource"], columns=df["RaceDesc"])
 	fig = (table.plot(kind="barh", figsize=(15,12), stacked=True, title='Pre-Hire Employee Source By Race').legend(bbox_to_anchor=(1,1))	).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\raceEmploySrc.png', bbox_inches='tight')
+	img_file = 'raceEmploySrc.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/raceEmploySrc.png'
 
@@ -537,7 +561,8 @@ def raceEmploySrcSrc(df):
 def genderEmploySrcSrc(df):	
 	table = pd.crosstab(index=df["EmployeeSource"], columns=df["Sex"])
 	fig = (table.plot(kind="barh", figsize=(15,12), stacked=True, title='Pre-Hire Employee Source By Gender').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\genderEmploySrc.png', bbox_inches='tight')
+	img_file = 'genderEmploySrc.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/genderEmploySrc.png'
 
@@ -548,7 +573,8 @@ def perfScoreCountSrc(df):
 	ps_df = df[~df.PerformanceScore.str.startswith('Not applicable')]
 	table = pd.crosstab(index=ps_df["ManagerName"], columns=ps_df["PerformanceScore"])	
 	fig = (table.plot(kind="barh",figsize=(12,10),stacked=True,title='Performance Score Counts Given Per Manager').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\perfScoreCount.png', bbox_inches='tight')
+	img_file = 'perfScoreCount.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/perfScoreCount.png'
 
@@ -559,7 +585,8 @@ def deptPerfScoreCountSrc(df):
 	ps_df = df[~df.PerformanceScore.str.startswith('Not applicable')]
 	table = pd.crosstab(index=ps_df["Department"], columns=ps_df["PerformanceScore"])
 	fig = (table.plot(kind="barh",figsize=(10,8),stacked=True,title='Performance Score Counts Per Dept').legend(bbox_to_anchor=(1,1))).get_figure()
-	fig.savefig(my_path + r'\hr_dashboard\static\img\deptPerfScoreCount.png', bbox_inches='tight')
+	img_file = 'deptPerfScoreCount.png'
+	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/deptPerfScoreCount.png'
 
@@ -570,7 +597,8 @@ def staffPerfScoreDistribSrc(df):
 	g = sns.factorplot("PerformanceScore", data=df, aspect=4, kind="count")
 	g.set_xticklabels(rotation=0)
 	g = plt.title("Staff Performance Score Distribution")
-	plt.savefig(my_path + r'\hr_dashboard\static\img\staffPerfScoreDistrib.png', bbox_inches='tight')
+	img_file = 'staffPerfScoreDistrib.png'
+	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
 	src = '../static/img/staffPerfScoreDistrib.png'
 
