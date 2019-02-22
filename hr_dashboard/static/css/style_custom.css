@@ -180,8 +180,7 @@ i, span {
     )!important;
 }
 
-button .glyphicon, 
-#myCarousel .glyphicon {
+button .glyphicon {
 	color: #8dff33 !important;
 }
 
@@ -193,12 +192,21 @@ button .glyphicon,
 	background-color: #8dff33 !important;
 }
 
-.carousel-inner > .item > img,
-.carousel-inner > .item > a > img {
-	width: 100%;
-	height: 31vw !important;
+.carousel-inner > .item > img {
+	width: 92%;
+	height: 17vw !important;
 	margin: auto;
 	vertical-align: middle !important;
+}
+
+#carousel-bounding-box .carousel {
+	vertical-align: middle !important;
+	text-align: center !important;
+	height: 22vw !important; 
+}
+
+#myCarousel {
+  margin: 5px;
 }
 
 

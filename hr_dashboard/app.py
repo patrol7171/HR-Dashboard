@@ -151,20 +151,9 @@ db.session.commit()
 def index():
 	"""Render Home Page"""
 	plt.close('all')	
-	sql_stmnt = "Select * from employee_data"
-	df = getDataDF(sql_stmnt)
-	sql_stmnt2 = "Select * from recruiting_costs"
-	df2 = getRecruitCostsDF(sql_stmnt2)
-	current_df = df[~df['EmploymentStatus'].str.contains('Terminated for Cause|Voluntarily Terminated')]	
-	allEmp_df = df.copy()
-	costs_df = df2.copy()
-	
-	src1 = deptSrc(current_df)
-	src2 = recruitingSrc(costs_df)
-	src3 = staffPerfSrc(current_df)
-	src4 = termReasonsSrc(allEmp_df)
+	src_dict = getAllImgSources()
 		
-	return render_template('index.html', src1=src1, src2=src2, src3=src3, src4=src4)
+	return render_template('index.html',src_dict=src_dict)	
 	
 	
 	
@@ -197,7 +186,7 @@ def demographics():
 @app.route('/demographics_pdf')
 def demographics_pdf():
 	
-	return response
+	return pdf
 		
 	
 	
@@ -272,6 +261,48 @@ def getDataDF(sql):
 	df = pd.read_sql_query(sql, db.session.bind)	
 	
 	return df	
+
+
+def getAllImgSources():
+	src_dict = {}
+	sql_stmnt1 = "Select * from employee_data"
+	df = getDataDF(sql_stmnt1)
+	sql_stmnt2 = "Select * from recruiting_costs"
+	df2 = getRecruitCostsDF(sql_stmnt2)	
+	
+	costs_df = df2.copy()	
+	current_df = df[~df['EmploymentStatus'].str.contains('Terminated for Cause|Voluntarily Terminated')]	
+	allEmp_df = df.copy()
+
+	src_dict.update(src1a = empStatusSrc(allEmp_df))	
+	src_dict.update(src2a = deptSrc(current_df))
+	src_dict.update(src3a = deptCountSrc(current_df))
+	src_dict.update(src4a = positionCountSrc(current_df))
+	src_dict.update(src5 = raceDistribSrc(current_df))
+	src_dict.update(src6 = racePercentSrc(current_df))
+	src_dict.update(src7 = genderCountSrc(current_df))
+	src_dict.update(src8 = ageCountSrc(current_df))
+	src_dict.update(src9 = maritalDistribSrc(current_df))
+	src_dict.update(src10 = raceDistrib2Src(current_df))
+	src_dict.update(src11 = genderDistribSrc(current_df))
+	src_dict.update(src12 = staffLocalesSrc(current_df))
+
+	src_dict.update(src1b = recruitingSrc(costs_df))
+	src_dict.update(src2b = employCosts2018Src(costs_df))
+	src_dict.update(src3b = raceEmploySrcSrc(allEmp_df))
+	src_dict.update(src4b = genderEmploySrcSrc(allEmp_df))
+	
+	src_dict.update(src1c = staffPerfSrc(current_df))
+	src_dict.update(src2c = staffPerfScoreDistribSrc(current_df))
+	src_dict.update(src3c = perfScoreCountSrc(allEmp_df))
+	src_dict.update(src4c = deptPerfScoreCountSrc(allEmp_df))
+	
+	src_dict.update(src1d = termReasonsSrc(allEmp_df))
+	src_dict.update(src2d = rftRaceSrc(allEmp_df))
+	src_dict.update(src3d = rftMaritalSrc(allEmp_df))
+	src_dict.update(src4d = rftGenderSrc(allEmp_df))	
+
+	return src_dict
 	
 	
 def getRecruitCostsDF(sql):
@@ -436,7 +467,7 @@ def raceDistribSrc(df):
 	
 
 def racePercentSrc(df):	
-	fig = (df['RaceDesc'].value_counts()[0:20].plot(kind='pie',figsize=(8,8),title='Staff Percentage Per Race',autopct='%1.1f%%', label='',colormap=cmap2)).get_figure()
+	fig = (df['RaceDesc'].value_counts()[0:20].plot(kind='pie',figsize=(8,8),title='Staff Percentage Per Race',fontsize=20,autopct='%1.1f%%', label='',colormap=cmap2)).get_figure()
 	img_file = 'racePercent.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
@@ -549,7 +580,7 @@ def employCosts2018Src(df):
 
 def raceEmploySrcSrc(df):	
 	table = pd.crosstab(index=df["EmployeeSource"], columns=df["RaceDesc"])
-	fig = (table.plot(kind="barh", figsize=(15,12), stacked=True, title='Pre-Hire Employee Source By Race').legend(bbox_to_anchor=(1,1))	).get_figure()
+	fig = (table.plot(kind="barh", figsize=(15,12), stacked=True, title='Pre-Hire Employee Source By Race').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'raceEmploySrc.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
