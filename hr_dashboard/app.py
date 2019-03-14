@@ -26,7 +26,7 @@ from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DisconnectionError
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, make_response
 import json
 import urllib
 import requests
@@ -166,8 +166,8 @@ def demographics():
 		
 	
 @app.route('/demographics_pdf')
-	"""Get PDF"""
 def demographics_pdf():
+	"""Get PDF"""
 	
 	return pdf
 		
@@ -233,7 +233,7 @@ def glossary():
 	
 	
 @app.route("/application-error")
-def application_error):
+def application_error():
 	"""Render App Error Page"""
 	
 	return render_template("application-error.html")	
