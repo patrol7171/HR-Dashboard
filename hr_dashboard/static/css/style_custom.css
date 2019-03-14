@@ -212,6 +212,96 @@ button .glyphicon {
 
 
 /* ---------------------------------------------------
+    SPINNER/LOADER STYLE
+----------------------------------------------------- */
+
+#overlay {
+	position: fixed;
+	display: none;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0,0,0,0.5);
+	z-index: 2;
+	cursor: pointer;
+}
+
+.progress {
+	width: 100%;
+	text-align: center;
+	color: #8DFF33;
+	font-weight: 600;
+	line-height: 250%;
+}
+	
+.spinner.loading {
+	padding: 50px;
+	text-align: center;
+}
+
+.spinner.loading:before {
+	content: "";
+	height: 120px;
+	width: 120px;
+	margin: -15px auto auto -15px;
+	position: absolute;
+	top: 35%;
+	left: 45%;
+	border-width: 8px;
+	border-style: solid;
+	border-color: #8DFF33 #ccc #ccc;
+	border-radius: 100%;
+	animation: rotation 1.5s infinite linear;
+	transform: translate(-50%,-50%);
+	-ms-transform: translate(-50%,-50%);			
+}
+
+@keyframes rotation {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
+	}
+}
+
+.loading-text {
+	width: 120px;
+	position: absolute;
+	top: calc(50% - 50px);
+	left: calc(50% - 10px);
+	text-align: center;
+	font-weight: 600;
+	font-size: 2em;
+	color: #8DFF33;
+	transform: translate(-50%,-50%);
+	-ms-transform: translate(-50%,-50%);
+}
+
+.animate-bottom {
+   position: relative;
+   -webkit-animation-name: animatebottom;
+   -webkit-animation-duration: 1s;
+   animation-name: animatebottom;
+   animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+   from { bottom:-100px; opacity:0 } 
+   to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom { 
+   from{ bottom:-100px; opacity:0 } 
+   to{ bottom:0; opacity:1 }
+}
+
+
+
+/* ---------------------------------------------------
     NAVBAR STYLE
 ----------------------------------------------------- */
 	

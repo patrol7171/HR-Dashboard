@@ -18,23 +18,25 @@ import warnings
 import matplotlib.cbook
 warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
 import sqlalchemy
-from sqlalchemy import create_engine, MetaData, inspect, func
+from sqlalchemy import create_engine, MetaData, inspect, func, event
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.automap import automap_base
 from sqlalchemy import Column, Integer, String, Numeric, Text, Float
 from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
-from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.exc import DisconnectionError
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, jsonify, render_template, request, redirect, url_for, make_response
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 import json
 import urllib
 import requests
 import pdfkit
 import datetime
+import time
+import random
 from dateutil.parser import parse
 from collections import defaultdict, ChainMap, OrderedDict
 pd.options.mode.chained_assignment = None
-import mysql.connector
 
 from matplotlib import cm
 current_palette = sns.color_palette("muted", n_colors=30)
@@ -56,35 +58,19 @@ IMG_DIR = os.path.join(STATIC_DIR,'img/')
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['TESTING'] = True
-
-
-
-
-
-#################################################
-# SQL DB Config
-#################################################
-
-####### FOR HEROKU DEPLOYMENT ONLY ########:
-SQLCONNECTION = os.environ.get('CLEARDB_DATABASE_URL')
-
-####### FOR LOCAL USE ONLY ########:
-# from config import mysql_cleardb
-# SQLCONNECTION = mysql_cleardb
 
 
 
 
 #################################################
-# Database Setup
+# SQL Database Config & Setup
 #################################################
+SQLCONNECTION = 'sqlite:///Dental_Magic_HR_v9.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLCONNECTION
-app.config['SQLALCHEMY_POOL_RECYCLE'] = 299
-app.config['SQLALCHEMY_POOL_TIMEOUT'] = 20
 db = SQLAlchemy(app)
-engine = db.create_engine(SQLCONNECTION, echo=False)
+engine = db.create_engine(SQLCONNECTION, pool_recycle=3600, echo=False)
 session = Session(engine)
+
 
 class Employee_Data(db.Model):
     __tablename__ = 'employee_data'
@@ -119,7 +105,6 @@ class Employee_Data(db.Model):
     EmployeeSource = db.Column(db.Text)
     PerformanceScore = db.Column(db.Text)
 
-	
 class Recruiting_Costs(db.Model):
     __tablename__ = 'recruiting_costs'    
     ID = db.Column(db.Integer, primary_key=True)
@@ -137,13 +122,12 @@ class Recruiting_Costs(db.Model):
     November_2018 = db.Column(db.Integer)
     December_2018 = db.Column(db.Integer)
 
-	
 db.create_all()
 db.session.commit()
 
-
-
-
+	
+	
+	
 #################################################
 # Flask Routes
 #################################################
@@ -154,8 +138,7 @@ def index():
 	src_dict = getAllImgSources()
 		
 	return render_template('index.html',src_dict=src_dict)	
-	
-	
+
 	
 @app.route("/demographics")
 def demographics():
@@ -182,13 +165,11 @@ def demographics():
 		src6=src6, src7=src7, src8=src8, src9=src9, src10=src10, src11=src11, src12=src12)
 		
 	
-	
 @app.route('/demographics_pdf')
 def demographics_pdf():
 	
 	return pdf
 		
-	
 	
 @app.route("/recruiting")
 def recruiting():
@@ -209,7 +190,6 @@ def recruiting():
 	return render_template("recruiting.html", src1=src1, src2=src2, src3=src3, src4=src4)
 	
 	
-
 @app.route("/attrition")
 def attrition():
 	"""Render Employee & Site Locater Page"""
@@ -225,8 +205,7 @@ def attrition():
 	
 	return render_template("attrition.html", src1=src1, src2=src2, src3=src3, src4=src4)
 
-	
-	
+		
 @app.route("/talent")
 def talent():
 	"""Render HR Policies & Rules Page"""
@@ -243,15 +222,29 @@ def talent():
 		
 	return render_template("talent.html", src1=src1, src2=src2, src3=src3, src4=src4)
 
-	
-	
+		
 @app.route("/glossary")
 def glossary():
 	"""Render HR Policies & Rules Page"""
 	plt.close('all')
+	
 	return render_template("glossary.html")	
 	
 
+@app.errorhandler(404)
+def not_found_error(error):
+
+    return render_template('404.html'), 404
+	
+	
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+	
+    return render_template('500.html'), 500	
+	
+		
+		
 	
 	
 #################################################
@@ -635,7 +628,7 @@ def staffPerfScoreDistribSrc(df):
 
 	return src	
 	
-	
+
 	
 if __name__ == '__main__':
     app.run(debug=True)

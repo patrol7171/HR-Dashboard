@@ -2,6 +2,7 @@
 ##CUSTOM CONFIG FILES
 apiKeys.*
 config.*
+*.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
