@@ -166,6 +166,7 @@ def demographics():
 		
 	
 @app.route('/demographics_pdf')
+	"""Get PDF"""
 def demographics_pdf():
 	
 	return pdf
@@ -192,7 +193,7 @@ def recruiting():
 	
 @app.route("/attrition")
 def attrition():
-	"""Render Employee & Site Locater Page"""
+	"""Render Employee Retention & Attrition Page"""
 	plt.close('all')
 	sql_stmnt = "Select * from employee_data"
 	df = getDataDF(sql_stmnt)
@@ -208,7 +209,7 @@ def attrition():
 		
 @app.route("/talent")
 def talent():
-	"""Render HR Policies & Rules Page"""
+	"""Render HR Talent Management Page"""
 	plt.close('all')
 	sql_stmnt = "Select * from employee_data"
 	df = getDataDF(sql_stmnt)
@@ -225,10 +226,17 @@ def talent():
 		
 @app.route("/glossary")
 def glossary():
-	"""Render HR Policies & Rules Page"""
+	"""Render HR Glossary Page"""
 	plt.close('all')
 	
 	return render_template("glossary.html")	
+	
+	
+@app.route("/application-error")
+def application_error):
+	"""Render App Error Page"""
+	
+	return render_template("application-error.html")	
 	
 
 @app.errorhandler(404)
