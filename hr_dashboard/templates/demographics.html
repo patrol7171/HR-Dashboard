@@ -2,22 +2,31 @@
 
 {% block content %}
     <h2>Employee Demographics</h2>
-<!-- 	<div class="row-fluid">
+	<div class="row-fluid">
 		<div class='col-sm-12 col-md-12 col-lg-12'>
 			<div class="well">
-				<p>
-				 <a href="{{ url_for('demographics_pdf') }}">Get as PDF</a>
-				</p>
-			</div>		 
+				<div class="item">
+					<a class="btn btn-default" href="{{ url_for('download_pdf', pageName='demographics') }}">
+						<img src="../static/img/get_pdf.png" width="36vw" height="34vw" alt="Get PDF"><br>Get PDF</a>			 
+				</div>
+				<div class="vdivider"></div>
+				<div class="item">
+					<p>
+						The following data visualizations depict the current information on file for all employment status types which include terminated 
+						or former staff. The information that is based solely on data for current staff members will be labeled as such. These visualizations are 
+						subject to change whenever database updates are made.
+					</p>
+				</div>   
+			</div><br>		 
 		</div>				
-	</div> -->
+	</div>
 	<div class="row-fluid">
 		<div class="col-sm-12 col-md-6 col-lg-6" id="dash-panel">
 			<div class="panel panel-default">
 			<div class="panel-heading"><b>Employment Status - All Records On File</b></div>
 				<div class="panel-body">
 					<div id='graph-img'>
-						<img src={{ src1 }} alt="d">
+						<img src={{ src_dict.src1 }} alt="d">
 					</div>
 				</div>						
 			</div>
@@ -27,7 +36,7 @@
 			<div class="panel-heading"><b>Staff Percentages By Department</b></div>
 				<div class="panel-body">
 					<div id="graph-img">
-						<img src={{ src2 }} alt="">
+						<img src={{ src_dict.src2 }} alt="">
 					</div>
 				</div>						
 			</div>			
@@ -39,7 +48,7 @@
 			<div class="panel-heading"><b>Staff Totals By Department</b></div>
 				<div class="panel-body">
 					<div id="graph-img">
-						<img src={{ src3 }} alt="">
+						<img src={{ src_dict.src3 }} alt="">
 					</div>
 				</div>						
 			</div>			
@@ -49,7 +58,7 @@
 			<div class="panel-heading"><b>Current Racial Percentages</b></div>
 				<div class="panel-body">
 					<div id="graph-img">
-						<img src={{ src6 }} alt="">
+						<img src={{ src_dict.src6 }} alt="">
 					</div>
 				</div>						
 			</div>		
@@ -61,7 +70,7 @@
 			<div class="panel-heading"><b>Current Staff Racial Distribution</b></div>
 				<div class="panel-body">
 					<div id='graph2-img'>
-						<img src={{ src5 }} alt="d">
+						<img src={{ src_dict.src5 }} alt="d">
 					</div>
 				</div>
 			</div>
@@ -73,7 +82,7 @@
 			<div class="panel-heading"><b>Current Staff Count By Position</b></div>
 				<div class="panel-body">
 					<div id="graph-img">
-						<img src={{ src4 }} alt="">
+						<img src={{ src_dict.src4 }} alt="">
 					</div>
 				</div>						
 			</div>			
@@ -83,7 +92,7 @@
 			<div class="panel-heading"><b>Staff Location By Department</b></div>
 				<div class="panel-body">
 					<div id="graph-img">
-						<img src={{ src12 }} alt="">
+						<img src={{ src_dict.src12 }} alt="">
 					</div>
 				</div>						
 			</div>		
@@ -94,8 +103,8 @@
 			<div class="panel panel-default">
 			<div class="panel-heading"><b>Staff Gender Totals</b></div>
 				<div class="panel-body">
-					<div id="graph-img">
-						<img src={{ src7 }} alt="">
+					<div id="graph2-img">
+						<img src={{ src_dict.src7 }} alt="">
 					</div>
 				</div>						
 			</div>			
@@ -105,7 +114,7 @@
 			<div class="panel-heading"><b>Staff Gender Distribution By Department</b></div>
 				<div class="panel-body">
 					<div id="graph-img">
-						<img src={{ src11 }} alt="">
+						<img src={{ src_dict.src11 }} alt="">
 					</div>
 				</div>						
 			</div>		
@@ -117,7 +126,7 @@
 			<div class="panel-heading"><b>Racial Distribution By Department</b></div>
 				<div class="panel-body">
 					<div id='graph2-img'>
-						<img src={{ src10 }} alt="d">
+						<img src={{ src_dict.src10 }} alt="d">
 					</div>
 				</div>						
 			</div>
@@ -129,7 +138,7 @@
 			<div class="panel-heading"><b>Marital Status Distribution By Department</b></div>
 				<div class="panel-body">
 					<div id='graph2-img'>
-						<img src={{ src9 }} alt="d">
+						<img src={{ src_dict.src9 }} alt="d">
 					</div>
 				</div>						
 			</div>
@@ -141,7 +150,7 @@
 			<div class="panel-heading"><b>Staff Age Distribution</b></div>
 				<div class="panel-body">
 					<div id='graph2-img'>
-						<img src={{ src8 }} alt="d">
+						<img src={{ src_dict.src8 }} alt="d">
 					</div>
 				</div>			
 			</div>

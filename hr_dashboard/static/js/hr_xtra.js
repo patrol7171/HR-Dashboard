@@ -1,88 +1,121 @@
 
-//*********************************************  Loader/Spinner  *********************************************
+//*********************************************  Spinner/Loader  *********************************************
 function start_img_task() {
 	// add task status elements
-	console.log('hello!')
 	div = $('<div class="progress"><div></div><div></div><div>...</div><div>&nbsp;</div></div>');
 	$('#progress').append(div);
-
-	// create a progress bar
-	var nanobar = new Nanobar({
-		bg: '#8DFF33',
-		target: div[0].childNodes[0]
-	});
-
 	// send ajax POST request to start background job
 	$.ajax({
 		type: 'POST',
 		url: '/getAllImagesTask',
 		success: function(data, status, request) {
 			status_url = request.getResponseHeader('Location');
-			update_progress(status_url, nanobar, div[0]);
+			update_progress(status_url, div[0]);
 		},
 		error: function() {
-			alert('An unexpected error occurred');
+			alert('An unexpected error with the images occurred');
 		}
 	});
 }
 
-
-function update_progress(status_url, nanobar, status_div) {
+function update_progress(status_url, status_div) {
 	// send GET request to status URL
 	$.getJSON(status_url, function(data) {
-		// update UI
-		percent = parseInt(data['current'] * 100 / data['total']);
-		nanobar.go(percent);
-		$("#percent").text(percent + '%');			   
+		// update UI			   
 		$(status_div.childNodes[2]).text(data['status']);
 		if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
-			if ('result' in data) {
-				// show index page		
-				console.log(data);
-				run_index_page(data);
-				$("#page-body").show();
+			if ('result' in data) {		
+				result = data['result'];
+				// post results to index page						
+				run_index_page(result);						
 			}
 			else {
 				// something unexpected happened
 				$(status_div.childNodes[3]).text('Result: ' + data['state']);
-			}
+			}		
 		}
 		else {
 			// rerun in 2 seconds
 			setTimeout(function() {
-				update_progress(status_url, nanobar, status_div);
+				update_progress(status_url, status_div);
 			}, 2000);
 		}
 	});
 }
 
-
-function run_index_page(src_data) {
-// send ajax POST request to show index page
+function run_index_page(info) {
+	// send ajax POST request to send results to index page
 	$.ajax({
 		type: 'POST',
 		url: '/',
-		data: src_data,
-		dataType: "json",
-		success: function(response) {
-			console.log(response);
+		data: JSON.stringify(info),
+		contentType: 'application/json',
+		success: function (data) {
+			window.location.href = "http://127.0.0.1:5000/"; // localhost for now -- CHANGE AFTER DEPLOYMENT
 		},
 		error: function() {
-			alert('An unexpected error occurred');
+			alert('An unexpected error occurred--unable to show home page');
 		}
 	});
 }
 
-
-function overlay_on() {
-	document.getElementById("overlay").style.display = "block";
+function start_pageload_task(task_func, page) {
+	// send ajax POST request to start checking background job
+	$.ajax({
+		type: 'POST',
+		url: '/getPageImagesTask/'+task_func,
+		success: function(data, status, request) {
+			status_url = request.getResponseHeader('Location');
+			verify_progress(status_url, page);
+		},
+		error: function() {
+			alert('An unexpected error with starting the page load task occurred');
+		}
+	});
 }
 
-
-function overlay_off() {
-	document.getElementById("overlay").style.display = "none";
+function verify_progress(status_url, page_name) {
+	// send GET request to status URL
+	$.getJSON(status_url, function(data) {
+		if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
+			if ('result' in data) {		
+				result = data['result'];
+				// remove loader/spinner class and post results to page	
+				$( "#loading" ).removeClass("loader loader-clock is-active");			
+				show_page(result, page_name);						
+			}
+			else {				
+				alert('Result: ' + data['state']); // something unexpected happened
+			}		
+		}
+		else {
+			// rerun in 2 seconds
+			setTimeout(function() {
+				verify_progress(status_url, page_name);
+			}, 2000);
+		}
+	});
 }
 
+function show_page(info, page_name) {
+	// send ajax POST request to send results to page
+	$.ajax({
+		type: 'POST',
+		url: '/'+page_name,
+		data: JSON.stringify(info),
+		contentType: 'application/json',
+		success: function (data) {
+			location.reload();			
+		},
+		error: function() {
+			alert('An unexpected error occurred--unable to show page');
+		}
+	});
+}
+
+function setVisible(selector, visible) {
+	document.querySelector(selector).style.display = visible ? 'block' : 'none';
+}
 
 
 //*********************************************   2  *********************************************

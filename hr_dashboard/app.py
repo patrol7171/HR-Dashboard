@@ -26,7 +26,8 @@ from sqlalchemy.sql import text
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import DisconnectionError
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash, make_response
+from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
+from api2pdf import Api2Pdf
 import json
 import urllib
 import requests
@@ -34,16 +35,24 @@ import pdfkit
 import datetime
 import time
 import random
+import threading
 from dateutil.parser import parse
 from collections import defaultdict, ChainMap, OrderedDict
+from celery import Celery
+from celery import uuid
+import redis
 pd.options.mode.chained_assignment = None
+from APIkeys import apikey
+from config import my_secret_key
 
+### Color Schemes ##
 from matplotlib import cm
 current_palette = sns.color_palette("muted", n_colors=30)
 cmap1 = cm.get_cmap('gist_rainbow')
 cmap2 = cm.get_cmap('rainbow')
 cs1 = cm.Dark2(np.arange(40))
 cs2 = cm.Paired(np.arange(40))
+
 
 
 
@@ -55,22 +64,54 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 PROJECT_DIR = os.path.join(PROJECT_ROOT,'../hr_dashboard')
 STATIC_DIR = os.path.join(PROJECT_DIR,'static/')
 IMG_DIR = os.path.join(STATIC_DIR,'img/')
+PDF_STYLE_DIR = os.path.join(STATIC_DIR,'pdf_style/')
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.secret_key = my_secret_key
+
 
 
 
 
 #################################################
-# SQL Database Config & Setup
+# Api2Pdf Setup
+#################################################
+API2PDF_API_KEY = apikey
+USERAGENT = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
+
+
+
+
+#################################################
+# Celery & Redis Config
+#################################################
+
+####### FOR HEROKU DEPLOYMENT ONLY ########:
+app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL')
+app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL')
+
+####### FOR LOCAL USE ONLY ########:
+# from config import my_redis_url
+# app.config['CELERY_BROKER_URL'] = my_redis_url
+# app.config['CELERY_RESULT_BACKEND'] = my_redis_url
+
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['CELERY_RESULT_BACKEND'])
+
+
+
+
+
+#################################################
+# SQL Database Models, Config & Setup
 #################################################
 SQLCONNECTION = 'sqlite:///Dental_Magic_HR_v9.sqlite'
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLCONNECTION
 db = SQLAlchemy(app)
 engine = db.create_engine(SQLCONNECTION, pool_recycle=3600, echo=False)
 session = Session(engine)
-
 
 class Employee_Data(db.Model):
     __tablename__ = 'employee_data'
@@ -126,102 +167,162 @@ db.create_all()
 db.session.commit()
 
 	
+
+
+	
+#################################################
+# Global Variables
+#################################################
+_index_src_dict = None
+_demo_src_dict = None 
+_tal_src_dict = None
+_attr_src_dict = None
+_recr_src_dict = None
+
+
+
+
+
+#################################################
+# Celery Tasks
+#################################################
+@celery.task(bind=True)
+def getAllImages_task(self):
+	"""Background task that creates index page images."""
+	self.update_state(state='PROGRESS', meta={'current': 50, 'total': 50, 'status': 'Still loading... Please wait...'})
+	img_src_dict = getAllImgSources()	
+
+	return {'current': 100, 'total': 100, 'status': 'Done!', 'result': img_src_dict}
+	
+
+@celery.task(bind=True)
+def getDemographicsImages_task(self):
+	"""Background task that creates Demographics page images."""
+	self.update_state(state='PROGRESS', meta={'status': ''})
+	img_src_dict = getDemographicsImgSources()
+
+	return {'status': 'Done', 'result': img_src_dict}	
+	
+
+@celery.task(bind=True)
+def getRecruitingImages_task(self):
+	"""Background task that creates Recruiting page images."""
+	self.update_state(state='PROGRESS', meta={'status': ''})
+	img_src_dict = getRecruitingImgSources()
+
+	return {'status': 'Done', 'result': img_src_dict}
 	
 	
+@celery.task(bind=True)
+def getAttritionImages_task(self):
+	"""Background task that creates Attrition page images."""
+	self.update_state(state='PROGRESS', meta={'status': ''})
+	img_src_dict = getAttritionImgSources()
+
+	return {'status': 'Done', 'result': img_src_dict}	
+	
+
+@celery.task(bind=True)
+def getTalentImages_task(self):
+	"""Background task that creates Talent page images."""
+	self.update_state(state='PROGRESS', meta={'status': ''})
+	img_src_dict = getTalentImgSources()
+
+	return {'status': 'Done', 'result': img_src_dict}	
+		
+	
+	
+		
+
 #################################################
 # Flask Routes
 #################################################
-@app.route("/")
+@app.route('/', methods=['GET', 'POST'])
 def index():
-	"""Render Home Page"""
-	plt.close('all')	
-	src_dict = getAllImgSources()
-		
-	return render_template('index.html',src_dict=src_dict)	
+	"""Render Home/Index Page"""
+	global _index_src_dict
+	if request.method == 'POST':
+		_index_src_dict = request.get_json(force=True)
+		return ('', 204)
+	else:
+		if _index_src_dict is None:
+			return redirect(url_for('loading'))	
+		else:
+			src_dict = _index_src_dict
+			# _index_src_dict = None #MAY NOT BE NECESSARY
+			return render_template('index.html', src_dict=src_dict)
+			
 
-	
-@app.route("/demographics")
+@app.route("/demographics", methods=['GET', 'POST'])
 def demographics():
 	"""Render Employee Demographics Page"""
-	plt.close('all')
-	sql_stmnt = "Select * from employee_data"
-	df = getDataDF(sql_stmnt)
-	current_df = df[~df['EmploymentStatus'].str.contains('Terminated for Cause|Voluntarily Terminated')]
-	
-	src1 = empStatusSrc(df)
-	src2 = deptSrc(current_df)
-	src3 = deptCountSrc(current_df)
-	src4 = positionCountSrc(current_df)
-	src5 = raceDistribSrc(current_df)
-	src6 = racePercentSrc(current_df)
-	src7 = genderCountSrc(current_df)
-	src8 = ageCountSrc(current_df)
-	src9 = maritalDistribSrc(current_df)
-	src10 = raceDistrib2Src(current_df)
-	src11 = genderDistribSrc(current_df)
-	src12 = staffLocalesSrc(current_df)
-		
-	return render_template("demographics.html", src1=src1, src2=src2, src3=src3, src4=src4, src5=src5,
-		src6=src6, src7=src7, src8=src8, src9=src9, src10=src10, src11=src11, src12=src12)
+	global _demo_src_dict
+	if request.method == 'POST':
+		_demo_src_dict = request.get_json(force=True)
+		return ('', 204)
+	else:
+		if _demo_src_dict is None:	
+			task_func = 'getDemographicsImages_task'
+			page = 'demographics'
+			return render_template('loading2.html', task_func=task_func, page=page)				
+		else:
+			src_dict = _demo_src_dict
+			#_demo_src_dict = None	#MAY NOT BE NECESSARY	
+			return render_template('demographics.html', src_dict = src_dict)			
 		
 	
-@app.route('/demographics_pdf')
-def demographics_pdf():
-	"""Get PDF"""
-	
-	return pdf
-		
-	
-@app.route("/recruiting")
+@app.route("/recruiting", methods=['GET', 'POST'])
 def recruiting():
 	"""Render Recruitment Page"""
-	plt.close('all')
-	sql_stmnt = "Select * from employee_data"
-	df = getDataDF(sql_stmnt)
-	sql_stmnt2 = "Select * from recruiting_costs"
-	df2 = getRecruitCostsDF(sql_stmnt2)		
-	allEmp_df = df.copy()
-	costs_df = df2.copy()
+	global _recr_src_dict
+	if request.method == 'POST':
+		_recr_src_dict = request.get_json(force=True)
+		return ('', 204)
+	else:
+		if _recr_src_dict is None:	
+			task_func = 'getRecruitingImages_task'
+			page = 'recruiting'
+			return render_template('loading2.html', task_func=task_func, page=page)				
+		else:
+			src_dict = _recr_src_dict
+			#_recr_src_dict = None	#MAY NOT BE NECESSARY	
+			return render_template('recruiting.html', src_dict = src_dict)
 	
-	src1 = recruitingSrc(costs_df)
-	src2 = employCosts2018Src(costs_df)
-	src3 = raceEmploySrcSrc(allEmp_df)
-	src4 = genderEmploySrcSrc(allEmp_df)
 	
-	return render_template("recruiting.html", src1=src1, src2=src2, src3=src3, src4=src4)
-	
-	
-@app.route("/attrition")
+@app.route("/attrition", methods=['GET', 'POST'])
 def attrition():
 	"""Render Employee Retention & Attrition Page"""
-	plt.close('all')
-	sql_stmnt = "Select * from employee_data"
-	df = getDataDF(sql_stmnt)
-	allEmp_df = df.copy()	
-	
-	src1 = termReasonsSrc(allEmp_df)
-	src2 = rftRaceSrc(allEmp_df)
-	src3 = rftMaritalSrc(allEmp_df)
-	src4 = rftGenderSrc(allEmp_df)
-	
-	return render_template("attrition.html", src1=src1, src2=src2, src3=src3, src4=src4)
+	global _attr_src_dict
+	if request.method == 'POST':
+		_attr_src_dict = request.get_json(force=True)
+		return ('', 204)
+	else:
+		if _attr_src_dict is None:	
+			task_func = 'getAttritionImages_task'
+			page = 'attrition'
+			return render_template('loading2.html', task_func=task_func, page=page)				
+		else:
+			src_dict = _attr_src_dict
+			#_attr_src_dict = None	#MAY NOT BE NECESSARY	
+			return render_template('attrition.html', src_dict = src_dict)
 
 		
-@app.route("/talent")
+@app.route("/talent", methods=['GET', 'POST'])
 def talent():
 	"""Render HR Talent Management Page"""
-	plt.close('all')
-	sql_stmnt = "Select * from employee_data"
-	df = getDataDF(sql_stmnt)
-	current_df = df[~df['EmploymentStatus'].str.contains('Terminated for Cause|Voluntarily Terminated')]	
-	allEmp_df = df.copy()	
-	
-	src1 = staffPerfSrc(current_df)
-	src2 = staffPerfScoreDistribSrc(current_df)
-	src3 = perfScoreCountSrc(allEmp_df)
-	src4 = deptPerfScoreCountSrc(allEmp_df)
-		
-	return render_template("talent.html", src1=src1, src2=src2, src3=src3, src4=src4)
+	global _tal_src_dict
+	if request.method == 'POST':
+		_tal_src_dict = request.get_json(force=True)
+		return ('', 204)
+	else:
+		if _tal_src_dict is None:	
+			task_func = 'getTalentImages_task'
+			page = 'talent'
+			return render_template('loading2.html', task_func=task_func, page=page)				
+		else:
+			src_dict = _tal_src_dict
+			#_tal_src_dict = None	#MAY NOT BE NECESSARY	
+			return render_template('talent.html', src_dict = src_dict)
 
 		
 @app.route("/glossary")
@@ -230,6 +331,107 @@ def glossary():
 	plt.close('all')
 	
 	return render_template("glossary.html")	
+	
+			
+@app.route('/loading')
+def loading():
+	"""Render Intro Loader Page"""
+
+	return render_template("loading.html")	
+	
+	
+@app.route('/getAllImagesTask', methods=['POST'])
+def getAllImagesTask():
+	task = getAllImages_task.apply_async()
+	
+	return jsonify({}), 202, {'Location': url_for('taskstatus', task_id=task.id)}	
+	
+	
+@app.route('/status/<task_id>')
+def taskstatus(task_id):
+	task = getAllImages_task.AsyncResult(task_id)
+	if task.state == 'PENDING':
+		response = {
+			'state': task.state,
+			'current': 0,
+			'total': 1,
+			'status': 'Loading Home Page...'
+		}
+	elif task.state != 'FAILURE':
+		response = {
+			'state': task.state,
+			'current': task.info.get('current', 0),
+			'total': task.info.get('total', 1),
+			'status': task.info.get('status', '')
+		}
+		if 'result' in task.info:
+				response['result'] = task.info['result']	
+	else:
+		# something went wrong in the background job
+		response = {
+			'state': task.state,
+			'current': 1,
+			'total': 1,
+			'status': str(task.info),  # the exception raised
+		}
+		
+	return jsonify(response)
+
+
+@app.route('/getPageImagesTask/<func>', methods=['POST'])
+def getPageImagesTask(func):
+	myPageTask = globals()[func]
+	task = myPageTask.apply_async()
+	
+	return jsonify({}), 202, {'Location': url_for('getTaskStatus', task_id=task.id, func=func)}
+	
+
+@app.route('/status/<task_id>/<func>')
+def getTaskStatus(task_id, func):
+	myPageTask = globals()[func]
+	task = myPageTask.AsyncResult(task_id)
+	if task.state == 'PENDING':
+		response = {
+			'state': task.state,
+			'status': 'Pending...'
+		}
+	elif task.state != 'FAILURE':
+		response = {
+			'state': task.state,
+			'status': task.info.get('status', '')
+		}
+		if 'result' in task.info:
+				response['result'] = task.info['result']	
+	else:
+		# something went wrong in the background job
+		response = {
+			'state': task.state,
+			'status': str(task.info),  # the exception raised
+		}
+		
+	return jsonify(response)
+	
+
+@app.route('/download_pdf/<pageName>')
+def download_pdf(pageName):
+	"""Download PDF of Selected Page Data"""
+	a2p_client = Api2Pdf(API2PDF_API_KEY)
+	siteUrlStub = 'https://hr-dashboard1.herokuapp.com/'
+	pageUrl = siteUrlStub + pageName + '_pdf'
+	# pageUrl = 'https://mlcc-dashboard.herokuapp.com' *** FOR LOCAL PDF TESTING ONLY***
+	saveName = pageName + '.pdf'
+	options = {
+		'landscape': 'true',
+		'displayHeaderFooter': 'true',
+		'footerTemplate': '<span class=”date”></span><br><span class=”pageNumber”></span>'
+	}
+	pdf_response = a2p_client.HeadlessChrome.convert_from_url(pageUrl, fileName=saveName, **options)	
+	if pdf_response.result['success'] == True:
+		pdf_url = pdf_response.result['pdf']
+		return redirect(pdf_url, code=302)
+	else:
+		flash('An error occurred -- unable to download PDF')
+		return ('', 204)
 	
 	
 @app.route("/application-error")
@@ -256,7 +458,7 @@ def internal_error(error):
 	
 	
 #################################################
-# App Functions
+# Image/Source Functions
 #################################################
 def getDataDF(sql):	
 	df = pd.read_sql_query(sql, db.session.bind)	
@@ -305,6 +507,74 @@ def getAllImgSources():
 
 	return src_dict
 	
+
+def getDemographicsImgSources():	
+	src_dict = {}
+	sql_stmnt = "Select * from employee_data"
+	df = getDataDF(sql_stmnt)
+	current_df = df[~df['EmploymentStatus'].str.contains('Terminated for Cause|Voluntarily Terminated')]
+	
+	src_dict.update(src1 = empStatusSrc(df))
+	src_dict.update(src2 = deptSrc(current_df))
+	src_dict.update(src3 = deptCountSrc(current_df))
+	src_dict.update(src4 = positionCountSrc(current_df))
+	src_dict.update(src5 = raceDistribSrc(current_df))
+	src_dict.update(src6 = racePercentSrc(current_df))
+	src_dict.update(src7 = genderCountSrc(current_df))
+	src_dict.update(src8 = ageCountSrc(current_df))
+	src_dict.update(src9 = maritalDistribSrc(current_df))
+	src_dict.update(src10 = raceDistrib2Src(current_df))
+	src_dict.update(src11 = genderDistribSrc(current_df))
+	src_dict.update(src12 = staffLocalesSrc(current_df))
+
+	return src_dict
+	
+	
+def getRecruitingImgSources():	
+	src_dict = {}
+	sql_stmnt = "Select * from employee_data"
+	df = getDataDF(sql_stmnt)
+	sql_stmnt2 = "Select * from recruiting_costs"
+	df2 = getRecruitCostsDF(sql_stmnt2)		
+	allEmp_df = df.copy()
+	costs_df = df2.copy()
+	
+	src_dict.update(src1 = recruitingSrc(costs_df))
+	src_dict.update(src2 = employCosts2018Src(costs_df))
+	src_dict.update(src3 = raceEmploySrcSrc(allEmp_df))
+	src_dict.update(src4 = genderEmploySrcSrc(allEmp_df))
+	
+	return src_dict
+
+
+def getAttritionImgSources():	
+	src_dict = {}
+	sql_stmnt = "Select * from employee_data"
+	df = getDataDF(sql_stmnt)
+	allEmp_df = df.copy()	
+	
+	src_dict.update(src1 = termReasonsSrc(allEmp_df))
+	src_dict.update(src2 = rftRaceSrc(allEmp_df))
+	src_dict.update(src3 = rftMaritalSrc(allEmp_df))
+	src_dict.update(src4 = rftGenderSrc(allEmp_df))
+
+	return src_dict
+
+
+def getTalentImgSources():	
+	src_dict = {}
+	sql_stmnt = "Select * from employee_data"
+	df = getDataDF(sql_stmnt)
+	current_df = df[~df['EmploymentStatus'].str.contains('Terminated for Cause|Voluntarily Terminated')]	
+	allEmp_df = df.copy()	
+	
+	src_dict.update(src1 = staffPerfSrc(current_df))
+	src_dict.update(src2 = staffPerfScoreDistribSrc(current_df))
+	src_dict.update(src3 = perfScoreCountSrc(allEmp_df))
+	src_dict.update(src4 = deptPerfScoreCountSrc(allEmp_df))
+
+	return src_dict	
+	
 	
 def getRecruitCostsDF(sql):
 	df = pd.read_sql_query(sql, db.session.bind)
@@ -323,6 +593,7 @@ def deptSrc(df):
 	img_file = 'dept.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()	
+	plt.close()	
 	src = '../static/img/dept.png'
 	
 	return src	
@@ -336,6 +607,7 @@ def recruitingSrc(df):
 	img_file = 'top10recruit.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')	
 	plt.clf()	
+	plt.close()	
 	src = '../static/img/top10recruit.png'
 	
 	return src	
@@ -359,6 +631,7 @@ def termReasonsSrc(df):
 	img_file = 'termReasons.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')	
 	plt.clf()
+	plt.close()
 	src = '../static/img/termReasons.png'
 	
 	return src	
@@ -376,6 +649,7 @@ def staffLocalesSrc(df):
 	img_file = 'staffLocale.png'
 	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
+	plt.close()	
 	src = '../static/img/staffLocale.png'
 	
 	return src	
@@ -426,6 +700,7 @@ def empStatusSrc(df):
 	img_file = 'status.png'	
 	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
+	plt.close()	
 	src = '../static/img/status.png'
 	
 	return src	
@@ -436,6 +711,7 @@ def deptCountSrc(df):
 	img_file = 'deptCount.png'	
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')	
 	plt.clf()
+	plt.close()	
 	src = '../static/img/deptCount.png'
 	
 	return src
@@ -450,6 +726,7 @@ def positionCountSrc(df):
 	img_file = 'positionCount.png'	
 	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
+	plt.close()	
 	src = '../static/img/positionCount.png'
 
 	return src
@@ -462,6 +739,7 @@ def raceDistribSrc(df):
 	img_file = 'raceDistrib.png'	
 	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
+	plt.close()	
 	src = '../static/img/raceDistrib.png'
 	
 	return src
@@ -472,6 +750,7 @@ def racePercentSrc(df):
 	img_file = 'racePercent.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
+	plt.close()	
 	src = '../static/img/racePercent.png'
 	
 	return src
@@ -482,7 +761,8 @@ def genderCountSrc(df):
 	g = plt.title("Staff Gender Counts")
 	img_file = 'genderCount.png'
 	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/genderCount.png'
 
 	return src	
@@ -494,7 +774,8 @@ def ageCountSrc(df):
 	g = plt.title("Distribution of Ages Among Staff")
 	img_file = 'ageCount.png'
 	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/ageCount.png'
 
 	return src
@@ -506,6 +787,7 @@ def maritalDistribSrc(df):
 	img_file = 'maritalDistrib.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
 	plt.clf()
+	plt.close()	
 	src = '../static/img/maritalDistrib.png'
 	
 	return src
@@ -516,7 +798,8 @@ def raceDistrib2Src(df):
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Race Distribution By Dept').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'raceDistrib2.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/raceDistrib2.png'
 	
 	return src
@@ -527,7 +810,8 @@ def genderDistribSrc(df):
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=False, title='Gender Distribution By Dept')).get_figure()
 	img_file = 'genderDistrib.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/genderDistrib.png'
 
 	return src	
@@ -539,7 +823,8 @@ def rftMaritalSrc(df):
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Reason For Term By Marital Status').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'rftMarital.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/rftMarital.png'
 
 	return src	
@@ -551,7 +836,8 @@ def rftRaceSrc(df):
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Reason For Term By Race').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'rftRace.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/rftRace.png'
 
 	return src	
@@ -563,7 +849,8 @@ def rftGenderSrc(df):
 	fig = (table.plot(kind="barh", figsize=(10,5), stacked=True, title='Reason For Term By Gender').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'rftGender.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/rftGender.png'
 
 	return src	
@@ -573,7 +860,8 @@ def employCosts2018Src(df):
 	fig = (df.plot(kind="barh", figsize=(10,8), stacked=True, colormap=cmap1,title='2018 Employment Source Costs').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'employCosts2018.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/employCosts2018.png'
 
 	return src	
@@ -584,7 +872,8 @@ def raceEmploySrcSrc(df):
 	fig = (table.plot(kind="barh", figsize=(15,12), stacked=True, title='Pre-Hire Employee Source By Race').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'raceEmploySrc.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/raceEmploySrc.png'
 
 	return src	
@@ -595,7 +884,8 @@ def genderEmploySrcSrc(df):
 	fig = (table.plot(kind="barh", figsize=(15,12), stacked=True, title='Pre-Hire Employee Source By Gender').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'genderEmploySrc.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/genderEmploySrc.png'
 
 	return src		
@@ -607,7 +897,8 @@ def perfScoreCountSrc(df):
 	fig = (table.plot(kind="barh",figsize=(12,10),stacked=True,title='Performance Score Counts Given Per Manager').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'perfScoreCount.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/perfScoreCount.png'
 
 	return src
@@ -619,7 +910,8 @@ def deptPerfScoreCountSrc(df):
 	fig = (table.plot(kind="barh",figsize=(10,8),stacked=True,title='Performance Score Counts Per Dept').legend(bbox_to_anchor=(1,1))).get_figure()
 	img_file = 'deptPerfScoreCount.png'
 	fig.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/deptPerfScoreCount.png'
 
 	return src
@@ -631,7 +923,8 @@ def staffPerfScoreDistribSrc(df):
 	g = plt.title("Staff Performance Score Distribution")
 	img_file = 'staffPerfScoreDistrib.png'
 	plt.savefig(os.path.join(IMG_DIR, img_file), bbox_inches='tight')
-	plt.clf()	
+	plt.clf()
+	plt.close()	
 	src = '../static/img/staffPerfScoreDistrib.png'
 
 	return src	

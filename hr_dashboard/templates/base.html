@@ -8,6 +8,7 @@
 		<meta name="robots" content="all,follow">
 		 <!-- Glossary CSS Block -->
 		<style>
+		{% block loading2_style %}{% endblock %}		
 		{% block glossary_style %}{% endblock %}
 		</style>	
 		<title>Dental Magic HR Analytics Portal</title>		
@@ -30,7 +31,7 @@
     </head>
 
 <body>	
-	<div id="loading" class="loader loader-clock is-active"></div>
+
 	<div class="wrapper">
 		<!-- Sidebar Holder -->
             <nav id="sidebar">
@@ -125,25 +126,8 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>	
 	<!-- other JS CDN-->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.2/leaflet.js" type="text/javascript"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/nanobar/0.2.1/nanobar.min.js"></script>
 	
 	<script>	
-		//loader
-		function onReady(callback) {
-		  var intervalId = window.setInterval(function() {
-			if (document.getElementsByTagName('body')[0] !== undefined) {
-			  window.clearInterval(intervalId);
-			  callback.call(this);
-			}
-		  }, 1000);
-		}
-		function setVisible(selector, visible) {
-		  document.querySelector(selector).style.display = visible ? 'block' : 'none';
-		}
-		onReady(function() {
-		  setVisible('#loading', false);
-		}); 
-
 		$(document).ready(function () {
 		//sidebar
 		 $('#sidebarCollapse').on('click', function () {
@@ -151,9 +135,11 @@
 		 });
 		 //copyright year
 		 $("#year").text((new Date).getFullYear());
+		 
 		});	
 				
 		<!-- Start JS Blocks -->		
+		{% block task_script %}{% endblock %}
 		{% block glossary_script %}{% endblock %}
 		{% block quote_script %}{% endblock %}
 		{% block carousel_script %}{% endblock %}			

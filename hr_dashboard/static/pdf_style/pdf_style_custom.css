@@ -1,0 +1,46 @@
+
+#graph-img img {
+	vertical-align: middle !important;
+	margin: auto;
+	text-align: center !important;
+	height: 17vw !important;
+}
+
+#graph2-img img {
+	vertical-align: middle !important;
+	margin: auto;
+	text-align: center !important;
+	height: 16vw !important;
+}
+
+#dash-panel .panel-body, 
+#dash-panel .panel-default {
+	vertical-align: middle !important;
+	text-align: center !important;
+	height: 22vw !important;
+	border-color: #8DFF33 !important; 
+}
+
+#dash2-panel .panel-body, 
+#dash2-panel .panel-default {
+	vertical-align: middle !important;
+	text-align: center !important;
+	height: 21vw !important;
+	border-color: #8DFF33 !important; 
+}
+
+#dash3-panel .panel-body, 
+#dash3-panel .panel-default {
+	vertical-align: middle !important;
+	text-align: center !important;
+	border-color: #8DFF33 !important; 
+}
+
+.wrapper {
+	width: 100%;
+    padding: 10px;
+    min-height: 91vh;
+}
+
+
+		

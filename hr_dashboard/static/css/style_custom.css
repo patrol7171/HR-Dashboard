@@ -163,11 +163,25 @@ i, span {
 }
 
 .well {
+	display: flex;
+	flex-direction: row;
+	flex: 1;
+	margin: 0 -8px;
 	text-align: left;
+	padding: 10px !important;
+}
+
+.well p {
+	margin: 0 auto;
+	line-height: 1.5em !important;
+}
+
+.well > * {
+  margin: 0 8px;
 }
 
 .well a {
-	color: #273983 !important;
+	color: #fff !important;
 }
 
 .gradient {
@@ -183,6 +197,37 @@ i, span {
 button .glyphicon {
 	color: #8dff33 !important;
 }
+
+.vdivider {
+  width: 2px;
+  height: 8vh;
+  margin: 6px 0;
+  background: #74746A;
+}
+
+.item {
+  flex: 0 1 auto;
+}
+
+.btn {
+	font-size: .75em !important;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+
+
+
+
+
+/* ---------------------------------------------------
+    CAROUSEL STYLE
+----------------------------------------------------- */
 
 .carousel-indicators li {
 	border: 2px solid #8dff33 !important;
@@ -215,48 +260,15 @@ button .glyphicon {
     SPINNER/LOADER STYLE
 ----------------------------------------------------- */
 
-#overlay {
-	position: fixed;
-	display: none;
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba(0,0,0,0.5);
-	z-index: 2;
-	cursor: pointer;
-}
-
 .progress {
+	font-family: 'Poppins', serif !important;
+	font-size: 2em !important;			
 	width: 100%;
 	text-align: center;
 	color: #8DFF33;
-	font-weight: 600;
-	line-height: 250%;
-}
-	
-.spinner.loading {
-	padding: 50px;
-	text-align: center;
-}
-
-.spinner.loading:before {
-	content: "";
-	height: 120px;
-	width: 120px;
-	margin: -15px auto auto -15px;
-	position: absolute;
-	top: 35%;
-	left: 45%;
-	border-width: 8px;
-	border-style: solid;
-	border-color: #8DFF33 #ccc #ccc;
-	border-radius: 100%;
-	animation: rotation 1.5s infinite linear;
-	transform: translate(-50%,-50%);
-	-ms-transform: translate(-50%,-50%);			
+	font-weight: 500 !important;
+	line-height: 250%;				
+	position: absolute !important; 
 }
 
 @keyframes rotation {
@@ -266,19 +278,6 @@ button .glyphicon {
 	to {
 		transform: rotate(359deg);
 	}
-}
-
-.loading-text {
-	width: 120px;
-	position: absolute;
-	top: calc(50% - 50px);
-	left: calc(50% - 10px);
-	text-align: center;
-	font-weight: 600;
-	font-size: 2em;
-	color: #8DFF33;
-	transform: translate(-50%,-50%);
-	-ms-transform: translate(-50%,-50%);
 }
 
 .animate-bottom {
@@ -586,10 +585,5 @@ a.article, a.article:hover {
    *****  *****
 ----------------------------------------------------- */
 
-
-
-/* ---------------------------------------------------
-   *****  *****
------------------------------------------------------ */
 
 		
