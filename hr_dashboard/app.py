@@ -42,8 +42,6 @@ from celery import Celery
 from celery import uuid
 import redis
 pd.options.mode.chained_assignment = None
-from APIkeys import apikey
-from config import my_secret_key
 
 ### Color Schemes ##
 from matplotlib import cm
@@ -77,8 +75,13 @@ app.secret_key = my_secret_key
 #################################################
 # Api2Pdf Setup
 #################################################
-API2PDF_API_KEY = apikey
 USERAGENT = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+####### FOR HEROKU DEPLOYMENT ONLY ########:
+API2PDF_API_KEY = os.environ.get('API2PDF_apikey')
+
+####### FOR LOCAL USE ONLY ########:
+# from APIkeys import apikey
+# API2PDF_API_KEY = apikey
 
 
 
@@ -87,7 +90,6 @@ USERAGENT = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) Appl
 #################################################
 # Celery & Redis Config
 #################################################
-
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
 app.config['CELERY_BROKER_URL'] = os.environ.get('REDIS_URL')
 app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL')
@@ -97,7 +99,6 @@ app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL')
 # app.config['CELERY_BROKER_URL'] = my_redis_url
 # app.config['CELERY_RESULT_BACKEND'] = my_redis_url
 
-# Initialize Celery
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['CELERY_RESULT_BACKEND'])
 
 
