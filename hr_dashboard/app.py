@@ -75,6 +75,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Api2Pdf Setup
 #################################################
 USERAGENT = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
 API2PDF_API_KEY = os.environ.get('API2PDF_apikey')
 
@@ -99,7 +100,7 @@ app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL')
 # app.config['CELERY_RESULT_BACKEND'] = my_redis_url
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['CELERY_RESULT_BACKEND'])
-celery.conf.update(app.config)
+# celery.conf.update(app.config)
 
 
 
@@ -416,9 +417,9 @@ def getTaskStatus(task_id, func):
 def download_pdf(pageName):
 	"""Download PDF of Selected Page Data"""
 	a2p_client = Api2Pdf(API2PDF_API_KEY)
-	siteUrlStub = 'https://hr-dashboard1.herokuapp.com/'
+	siteUrlStub = '/hr-dashboard1.herokuapp.com/'
 	pageUrl = siteUrlStub + pageName
-	# pageUrl = 'https://mlcc-dashboard.herokuapp.com' *** FOR LOCAL PDF TESTING ONLY***
+	# pageUrl = 'https://mlcc-dashboard.herokuapp.com' ### FOR LOCAL PDF TESTING ONLY ###
 	saveName = pageName
 	options = {
 		'landscape': 'true',

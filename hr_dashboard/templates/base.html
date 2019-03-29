@@ -109,7 +109,7 @@
 		   <!-- End Page Content Holder -->
 	 </div><!-- End of wrapper --> 
 		
-	<footer class="container-fluid text-center">
+	<footer class="container-fluid text-center" id="footer">
 	  <div class="row-fluid">
 		<div class="col-sm-6">
 		  <p>Dental Magic, Inc &copy; <span id="year"></span></p>
@@ -135,7 +135,12 @@
 		 });
 		 //copyright year
 		 $("#year").text((new Date).getFullYear());
-		 
+		 //sticky footer
+		  var bodyHeight = $("body").height();
+		  var vwptHeight = $(window).height();
+		  if (vwptHeight > (bodyHeight + 200)) {
+			$("footer#footer").css("position", "absolute").css("bottom", 0).css("left", 0).css("right", 0);
+		  }
 		});	
 				
 		<!-- Start JS Blocks -->		

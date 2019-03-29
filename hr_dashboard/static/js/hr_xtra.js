@@ -13,7 +13,8 @@ function start_img_task() {
 			update_progress(status_url, div[0]);
 		},
 		error: function() {
-			alert('An unexpected error with the images occurred');
+			alert('An unexpected error with the home page images occurred');
+			console.log('An unexpected error with the home page images occurred');			
 		}
 	});
 }
@@ -38,6 +39,7 @@ function update_progress(status_url, status_div) {
 			// rerun in 5 seconds
 			setTimeout(function() {
 				update_progress(status_url, status_div);
+				console.log('Task is still going...'); //TESTING
 			}, 5000);
 		}
 	});
@@ -51,11 +53,14 @@ function run_index_page(info) {
 		data: JSON.stringify(info),
 		contentType: 'application/json',
 		success: function (data) {
+			alert('Home page is ready to show'); //TESTING				
 			window.location.href = "https://hr-dashboard1.herokuapp.com/"; //production-Heroku
-			//window.location.href = "http://127.0.0.1:5000/"; //localhost for local testing only			
+			/* window.location.href = "http://127.0.0.1:5000/"; */ //localhost for local testing only	
+		
 		},
 		error: function() {
 			alert('An unexpected error occurred--unable to show home page');
+			console.log('An unexpected error occurred--unable to show home page');
 		}
 	});
 }
@@ -71,6 +76,7 @@ function start_pageload_task(task_func, page) {
 		},
 		error: function() {
 			alert('An unexpected error with starting the page load task occurred');
+			console.log('An unexpected error with starting the page load task occurred');
 		}
 	});
 }
@@ -79,7 +85,7 @@ function verify_progress(status_url, page_name) {
 	// send GET request to status URL
 	$.getJSON(status_url, function(data) {
 		if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
-			if ('result' in data && data['state'] == 'SUCCESS') {		
+			if ('result' in data) {		
 				result = data['result'];
 				// remove loader/spinner class and post results to page	
 				$( "#loading" ).removeClass("loader loader-clock is-active");			
@@ -93,6 +99,7 @@ function verify_progress(status_url, page_name) {
 			// rerun in 3 seconds
 			setTimeout(function() {
 				verify_progress(status_url, page_name);
+				console.log('Task is still going...'); //TESTING
 			}, 3000);
 		}
 	});
@@ -106,10 +113,12 @@ function show_page(info, page_name) {
 		data: JSON.stringify(info),
 		contentType: 'application/json',
 		success: function (data) {
-			location.reload();			
+			alert('Page is ready to show'); //TESTING			
+			location.reload();	
 		},
 		error: function() {
 			alert('An unexpected error occurred--unable to show page');
+			console.log('An unexpected error occurred--unable to show page');
 		}
 	});
 }
