@@ -189,7 +189,7 @@ _recr_src_dict = None
 @celery.task(bind=True)
 def getAllImages_task(self):
 	"""Background task that creates index page images."""
-	self.update_state(state='PROGRESS', meta={'current': 50, 'total': 50, 'status': 'Still loading... Please wait...'})
+	self.update_state(state='PROGRESS', meta={'current': 50, 'total': 50, 'status': 'Loading... Please wait...'})
 	img_src_dict = getAllImgSources()	
 
 	return {'current': 100, 'total': 100, 'status': 'Done!', 'result': img_src_dict}
