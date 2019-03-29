@@ -35,7 +35,7 @@ function update_progress(status_url, status_div) {
 			}		
 		}
 		else {
-			// rerun in 2 seconds
+			// rerun in 5 seconds
 			setTimeout(function() {
 				update_progress(status_url, status_div);
 			}, 5000);
@@ -79,7 +79,7 @@ function verify_progress(status_url, page_name) {
 	// send GET request to status URL
 	$.getJSON(status_url, function(data) {
 		if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {
-			if ('result' in data) {		
+			if ('result' in data && data['state'] == 'SUCCESS') {		
 				result = data['result'];
 				// remove loader/spinner class and post results to page	
 				$( "#loading" ).removeClass("loader loader-clock is-active");			
@@ -90,10 +90,10 @@ function verify_progress(status_url, page_name) {
 			}		
 		}
 		else {
-			// rerun in 2 seconds
+			// rerun in 3 seconds
 			setTimeout(function() {
 				verify_progress(status_url, page_name);
-			}, 5000);
+			}, 3000);
 		}
 	});
 }

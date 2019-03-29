@@ -417,9 +417,9 @@ def download_pdf(pageName):
 	"""Download PDF of Selected Page Data"""
 	a2p_client = Api2Pdf(API2PDF_API_KEY)
 	siteUrlStub = 'https://hr-dashboard1.herokuapp.com/'
-	pageUrl = siteUrlStub + pageName + '_pdf'
+	pageUrl = siteUrlStub + pageName
 	# pageUrl = 'https://mlcc-dashboard.herokuapp.com' *** FOR LOCAL PDF TESTING ONLY***
-	saveName = pageName + '.pdf'
+	saveName = pageName
 	options = {
 		'landscape': 'true',
 		'displayHeaderFooter': 'true',
