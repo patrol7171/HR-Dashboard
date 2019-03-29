@@ -51,7 +51,8 @@ function run_index_page(info) {
 		data: JSON.stringify(info),
 		contentType: 'application/json',
 		success: function (data) {
-			window.location.href = "http://127.0.0.1:5000/"; // localhost for now -- CHANGE AFTER DEPLOYMENT
+			window.location.href = "https://hr-dashboard1.herokuapp.com/"; //production-Heroku
+			//window.location.href = "http://127.0.0.1:5000/"; //localhost for local testing only			
 		},
 		error: function() {
 			alert('An unexpected error occurred--unable to show home page');
