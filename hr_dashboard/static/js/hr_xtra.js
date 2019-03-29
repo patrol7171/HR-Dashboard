@@ -38,7 +38,7 @@ function update_progress(status_url, status_div) {
 			// rerun in 2 seconds
 			setTimeout(function() {
 				update_progress(status_url, status_div);
-			}, 2000);
+			}, 5000);
 		}
 	});
 }
@@ -93,7 +93,7 @@ function verify_progress(status_url, page_name) {
 			// rerun in 2 seconds
 			setTimeout(function() {
 				verify_progress(status_url, page_name);
-			}, 2000);
+			}, 5000);
 		}
 	});
 }
