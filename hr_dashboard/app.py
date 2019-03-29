@@ -99,7 +99,7 @@ app.config['CELERY_RESULT_BACKEND'] = os.environ.get('REDIS_URL')
 # app.config['CELERY_RESULT_BACKEND'] = my_redis_url
 
 celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'], backend=app.config['CELERY_RESULT_BACKEND'])
-
+celery.conf.update(app.config)
 
 
 
