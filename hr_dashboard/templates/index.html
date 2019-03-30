@@ -124,15 +124,6 @@
 		 var url = "https://api.forismatic.com/api/1.0/?method=getQuote&format=jsonp&lang=en&jsonp=myJsonMethod&?callback=?";
 		 $.getJSON(url);
 	});			
-	function myJsonMethod(response) {
-		  quote = response.quoteText;
-		  author = response.quoteAuthor;
-		  if (response.quoteAuthor == '') {
-			$('#quoteInfo').html("<h5>" + quote + "</h5>" + "<p><i>- Author Unknown</i></p>");
-		  } else {
-			$('#quoteInfo').html("<h5>" + quote + "</h5>" + "<p><i>- " + author + "</i></p>");
-		  }
-	}	
 {% endblock %}		
 
 {% block carousel_script %}

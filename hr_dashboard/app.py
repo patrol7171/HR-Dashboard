@@ -417,9 +417,9 @@ def getTaskStatus(task_id, func):
 def download_pdf(pageName):
 	"""Download PDF of Selected Page Data"""
 	a2p_client = Api2Pdf(API2PDF_API_KEY)
-	siteUrlStub = '/hr-dashboard1.herokuapp.com/'
+	siteUrlStub = 'https://hr-dashboard1.herokuapp.com/'
+	# siteUrlStub = 'http://127.0.0.1:5000/' ### FOR LOCAL PDF TESTING ONLY ###	
 	pageUrl = siteUrlStub + pageName
-	# pageUrl = 'https://mlcc-dashboard.herokuapp.com' ### FOR LOCAL PDF TESTING ONLY ###
 	saveName = pageName
 	options = {
 		'landscape': 'true',
@@ -433,7 +433,13 @@ def download_pdf(pageName):
 	else:
 		flash('An error occurred -- unable to download PDF')
 		return ('', 204)
+
+
+@app.route("/demographics_pdf")
+def demographics_pdf():
 	
+	return render_template("demographics_pdf.html")	
+		
 	
 @app.route("/application-error")
 def application_error():

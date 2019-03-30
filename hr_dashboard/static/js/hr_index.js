@@ -1,10 +1,11 @@
 
-//------------------------------------------------------- Forismatic API SCRIPT --------------------------------------------------------------->
-function myJsonMethod(quote,author) {
-  if (author == '') {
-	$('#quoteInfo').html("<h4>" + quote + "</h4>" + "<p><i>- Author Unknown</i></p>");
-  } else {
-	$('#quoteInfo').html("<h4>" + quote + "</h4>" + "<p><i>- " + author + "</i></p>");
-  }
-}
-
+//------------------------------------------------------- Forismatic JS --------------------------------------------------------------->
+	function myJsonMethod(response) {
+		  quote = response.quoteText;
+		  author = response.quoteAuthor;
+		  if (response.quoteAuthor == '') {
+			$('#quoteInfo').html("<h5>" + quote + "</h5>" + "<p><i>- Author Unknown</i></p>");
+		  } else {
+			$('#quoteInfo').html("<h5>" + quote + "</h5>" + "<p><i>- " + author + "</i></p>");
+		  }
+	}

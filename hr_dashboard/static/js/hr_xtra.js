@@ -52,8 +52,7 @@ function run_index_page(info) {
 		url: '/',
 		data: JSON.stringify(info),
 		contentType: 'application/json',
-		success: function (data) {
-			alert('Home page is ready to show'); //TESTING				
+		success: function (data) {			
 			window.location.href = "https://hr-dashboard1.herokuapp.com/"; //production-Heroku
 			/* window.location.href = "http://127.0.0.1:5000/"; */ //localhost for local testing only	
 		
@@ -112,8 +111,7 @@ function show_page(info, page_name) {
 		url: '/'+page_name,
 		data: JSON.stringify(info),
 		contentType: 'application/json',
-		success: function (data) {
-			alert('Page is ready to show'); //TESTING			
+		success: function (data) {			
 			location.reload();	
 		},
 		error: function() {
