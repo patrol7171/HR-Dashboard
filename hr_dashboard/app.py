@@ -422,7 +422,6 @@ def download_pdf(pageName):
 	pageUrl = siteUrlStub + pageName
 	saveName = pageName
 	options = {
-		'landscape': 'true',
 		'displayHeaderFooter': 'true',
 		'footerTemplate': '<span class=”date”></span><br><span class=”pageNumber”></span>'
 	}
@@ -439,7 +438,25 @@ def download_pdf(pageName):
 def demographics_pdf():
 	
 	return render_template("demographics_pdf.html")	
+
+
+@app.route("/recruiting_pdf")
+def recruiting_pdf():
+	
+	return render_template("recruiting_pdf.html")		
 		
+
+@app.route("/attrition_pdf")
+def attrition_pdf():
+	
+	return render_template("attrition_pdf.html")	
+	
+
+@app.route("/talent_pdf")
+def talent_pdf():
+	
+	return render_template("talent_pdf.html")		
+	
 	
 @app.route("/application-error")
 def application_error():
