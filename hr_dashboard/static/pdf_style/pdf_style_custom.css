@@ -3,21 +3,21 @@
 	vertical-align: middle !important;
 	margin: auto;
 	text-align: center !important;
-	height: 55vh !important;
+	height: 35vh !important;
 }
 
 #graph2-img img {
 	vertical-align: middle !important;
 	margin: auto;
 	text-align: center !important;
-	height: 45vh !important;
+	height: 32vh !important;
 }
 
 #dash-panel .panel-body, 
 #dash-panel .panel-default {
 	vertical-align: middle !important;
 	text-align: center !important;
-	height: 65vh !important;
+	height: 45vh !important;
 	border-color: #8DFF33 !important; 
 }
 
@@ -25,7 +25,7 @@
 #dash2-panel .panel-default {
 	vertical-align: middle !important;
 	text-align: center !important;
-	height: 55vh !important;
+	height: 42vh !important;
 	border-color: #8DFF33 !important; 
 }
 

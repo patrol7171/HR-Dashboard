@@ -250,7 +250,6 @@ def index():
 			return redirect(url_for('loading'))	
 		else:
 			src_dict = _index_src_dict
-			# _index_src_dict = None #MAY NOT BE NECESSARY
 			return render_template('index.html', src_dict=src_dict)
 			
 
@@ -268,7 +267,6 @@ def demographics():
 			return render_template('loading2.html', task_func=task_func, page=page)				
 		else:
 			src_dict = _demo_src_dict
-			#_demo_src_dict = None	#MAY NOT BE NECESSARY	
 			return render_template('demographics.html', src_dict = src_dict)			
 		
 	
@@ -286,7 +284,6 @@ def recruiting():
 			return render_template('loading2.html', task_func=task_func, page=page)				
 		else:
 			src_dict = _recr_src_dict
-			#_recr_src_dict = None	#MAY NOT BE NECESSARY	
 			return render_template('recruiting.html', src_dict = src_dict)
 	
 	
@@ -304,7 +301,6 @@ def attrition():
 			return render_template('loading2.html', task_func=task_func, page=page)				
 		else:
 			src_dict = _attr_src_dict
-			#_attr_src_dict = None	#MAY NOT BE NECESSARY	
 			return render_template('attrition.html', src_dict = src_dict)
 
 		
@@ -321,8 +317,7 @@ def talent():
 			page = 'talent'
 			return render_template('loading2.html', task_func=task_func, page=page)				
 		else:
-			src_dict = _tal_src_dict
-			#_tal_src_dict = None	#MAY NOT BE NECESSARY	
+			src_dict = _tal_src_dict	
 			return render_template('talent.html', src_dict = src_dict)
 
 		
