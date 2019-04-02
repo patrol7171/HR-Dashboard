@@ -95,11 +95,11 @@ function verify_progress(status_url, page_name) {
 			}		
 		}
 		else {
-			// rerun in 3 seconds
+			// rerun in 4 seconds
 			setTimeout(function() {
 				verify_progress(status_url, page_name);
 				console.log('Task is still going...'); //TESTING
-			}, 3000);
+			}, 4000);
 		}
 	});
 }
