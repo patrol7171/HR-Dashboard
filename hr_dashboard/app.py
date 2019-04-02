@@ -420,7 +420,7 @@ def download_pdf(pageName):
 		'displayHeaderFooter': 'true',
 		'footerTemplate': '<span class=”date”></span><br><span class=”pageNumber”></span>'
 	}
-	pdf_response = a2p_client.HeadlessChrome.convert_from_url(pageUrl, fileName=saveName, options=options)	
+	pdf_response = a2p_client.HeadlessChrome.convert_from_url(pageUrl, fileName=saveName, **options)	
 	if pdf_response.result['success'] == True:
 		pdf_url = pdf_response.result['pdf']
 		return redirect(pdf_url, code=302)
