@@ -19,6 +19,13 @@
 	$(document).ready(function() {	
 		var page = '{{ page }}';
 		var task_func = '{{ task_func }}';
-		start_pageload_task(task_func, page);			
+		start_pageload_task(task_func, page);
+		
+		//auto-reload after 3 minutes
+		window.setTimeout(function(){
+			alert('An unexpected error occurred--page will reload');
+			window.location.reload();
+       }, 180000);
+	
 	});
 {% endblock %}	

@@ -33,6 +33,8 @@ function update_progress(status_url, status_div) {
 			else {
 				// something unexpected happened
 				$(status_div.childNodes[3]).text('Result: ' + data['state']);
+				alert('An unexpected error occurred--please reload page');
+				
 			}		
 		}
 		else {
@@ -54,12 +56,10 @@ function run_index_page(info) {
 		contentType: 'application/json',
 		success: function (data) {			
 			window.location.href = "https://hr-dashboard1.herokuapp.com/"; //production-Heroku
-			/* window.location.href = "http://127.0.0.1:5000/"; */ //localhost for local testing only	
-		
+			/* window.location.href = "http://127.0.0.1:5000/"; */ //localhost for local testing only		
 		},
 		error: function() {
 			alert('An unexpected error occurred--unable to show home page');
-			console.log('An unexpected error occurred--unable to show home page');
 		}
 	});
 }
@@ -75,7 +75,6 @@ function start_pageload_task(task_func, page) {
 		},
 		error: function() {
 			alert('An unexpected error with starting the page load task occurred');
-			console.log('An unexpected error with starting the page load task occurred');
 		}
 	});
 }
@@ -91,7 +90,7 @@ function verify_progress(status_url, page_name) {
 				show_page(result, page_name);						
 			}
 			else {				
-				alert('Result: ' + data['state']); // something unexpected happened
+				alert('Result: ' + data['state'] + '-- Please reload page'); // something unexpected happened
 			}		
 		}
 		else {
@@ -116,7 +115,6 @@ function show_page(info, page_name) {
 		},
 		error: function() {
 			alert('An unexpected error occurred--unable to show page');
-			console.log('An unexpected error occurred--unable to show page');
 		}
 	});
 }

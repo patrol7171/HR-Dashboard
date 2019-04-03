@@ -27,6 +27,12 @@
 		$(document).ready(function() {				
 			start_img_task();			
 		});
+		
+		function blink_text() {
+			$('#progress').fadeOut(500);
+			$('#progress').fadeIn(500);
+		}
+		setInterval(blink_text, 5000);
     </script>
 	
   </body>
