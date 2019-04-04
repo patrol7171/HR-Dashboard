@@ -7,8 +7,8 @@
 		background-image: url(../static/img/loading2.png) !important;
 		background-repeat: no-repeat !important;
 		background-attachment: fixed !important;
-		background-size: 50%;!important;
-		background-position: 25vw 50vh !important; 
+		background-size: 60%;!important;
+		background-position: 50vh !important; 
 	}
 {% endblock %}
 
@@ -23,12 +23,5 @@
 		var page = '{{ page }}';
 		var task_func = '{{ task_func }}';
 		start_pageload_task(task_func, page);
-		
-		//auto-reload after 2 minutes
-		window.setTimeout(function(){
-			alert('An unexpected error occurred--page will reload');
-			window.location.reload();
-       }, 120000);
-	
 	});
 {% endblock %}	

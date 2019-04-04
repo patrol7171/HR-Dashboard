@@ -26,14 +26,20 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script>	
 		$(document).ready(function() {				
-			start_img_task();			
+			start_img_task();	
+			//auto-reload after 2 minutes
+			window.setTimeout(function(){
+				alert('An unexpected error occurred--page will reload');
+				window.location.reload();
+		   }, 120000);
+				
 		});
 		
 		function blink_text() {
 			$('#progress').fadeOut(500);
 			$('#progress').fadeIn(500);
 		}
-		setInterval(blink_text, 5000);
+		setInterval(blink_text, 4000);
     </script>
 	
   </body>
