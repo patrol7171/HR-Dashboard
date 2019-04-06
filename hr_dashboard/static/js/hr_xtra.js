@@ -27,7 +27,7 @@ function update_progress(status_url, status_div) {
 			500: function() { location.reload(); }
 		},
 		error: function(x, t, m) {
-			if(t==="timeout") { window.location.href = 'https://hr-dashboard1.herokuapp.com/513'; }
+			if(t==="timeout") { window.location.href = 'https://hr-dashboard1.herokuapp.com/500'; }
 		}
 	});		
 	// send GET request to status URL
@@ -97,7 +97,7 @@ function verify_progress(status_url, page_name) {
 			500: function() { location.reload(); }
 		},
 		error: function(x, t, m) {
-			if(t==="timeout") { window.location.href = 'https://hr-dashboard1.herokuapp.com/513'; }
+			if(t==="timeout") { window.location.href = 'https://hr-dashboard1.herokuapp.com/500'; }
 		}
 	});	
 	// send GET request to status URL
@@ -150,8 +150,3 @@ function setVisible(selector, visible) {
 
 
 //*********************************************  3  *********************************************
-
-
-
-
-//*********************************************  4  *********************************************
