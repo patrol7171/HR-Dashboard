@@ -7,7 +7,7 @@
 		background-image: url(../static/img/loading2.png) !important;
 		background-repeat: no-repeat !important;
 		background-attachment: fixed !important;
-		background-size: 35%;!important;
+		background-size: 32%;!important;
 		background-position: 50% 50% !important; 
 	}
 {% endblock %}
@@ -19,9 +19,9 @@
 {% endblock %}
 
 {% block task_script %}	
-	$(document).ready(function() {	
+	$(document).ready(function() {		
 		var page = '{{ page }}';
 		var task_func = '{{ task_func }}';
-		start_pageload_task(task_func, page);
+		start_pageload_task(task_func, page);	
 	});
 {% endblock %}	

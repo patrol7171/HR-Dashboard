@@ -13,13 +13,23 @@ function start_img_task() {
 			update_progress(status_url, div[0]);
 		},
 		error: function() {
-			alert('An unexpected error with the home page images occurred');
-			console.log('An unexpected error with the home page images occurred');			
+			alert('An unexpected error with the home page occurred');
+			console.log('An unexpected error with the home page occurred');			
 		}
 	});
 }
 
 function update_progress(status_url, status_div) {
+	//AJAX timeout or internal error setup ***************************************
+	$.ajaxSetup({
+		timeout: 180000,
+		statusCode: {
+			500: function() { location.reload(); }
+		},
+		error: function(x, t, m) {
+			if(t==="timeout") { window.location.href = 'https://hr-dashboard1.herokuapp.com/513'; }
+		}
+	});		
 	// send GET request to status URL
 	$.getJSON(status_url, function(data) {
 		// update UI			   
@@ -74,12 +84,22 @@ function start_pageload_task(task_func, page) {
 			verify_progress(status_url, page);
 		},
 		error: function() {
-			alert('An unexpected error with starting the page load task occurred');
+			alert('An unexpected error with the page load task occurred');
 		}
 	});
 }
 
 function verify_progress(status_url, page_name) {
+	//AJAX timeout or internal error setup **************************************
+	$.ajaxSetup({
+		timeout: 180000,
+		statusCode: {
+			500: function() { location.reload(); }
+		},
+		error: function(x, t, m) {
+			if(t==="timeout") { window.location.href = 'https://hr-dashboard1.herokuapp.com/513'; }
+		}
+	});	
 	// send GET request to status URL
 	$.getJSON(status_url, function(data) {
 		if (data['state'] != 'PENDING' && data['state'] != 'PROGRESS') {

@@ -478,7 +478,12 @@ def internal_error(error):
     db.session.rollback()
 	
     return render_template('500.html'), 500	
+
 	
+@app.errorhandler(513)
+def timeout_error(error):
+	
+    return render_template('513.html'), 513		
 		
 		
 	
