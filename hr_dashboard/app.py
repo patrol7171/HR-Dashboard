@@ -68,11 +68,11 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 ####### FOR HEROKU DEPLOYMENT ONLY ########:
-app.secret_key = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 ####### FOR LOCAL USE ONLY ########:
 # from config import my_secret_key
-# app.secret_key = my_secret_key
+# app.config['SECRET_KEY'] = my_secret_key
 
 
 
