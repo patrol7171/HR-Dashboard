@@ -110,6 +110,6 @@ uszipcode==0.2.2
 vine==1.2.0
 WeasyPrint==44
 webencodings==0.5.1
-Werkzeug==0.14.1
+Werkzeug==0.15.3
 win-inet-pton==1.0.1
 wincertstore==0.2
